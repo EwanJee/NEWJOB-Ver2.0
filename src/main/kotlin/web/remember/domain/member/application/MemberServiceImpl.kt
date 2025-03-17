@@ -1,4 +1,4 @@
-package web.remember.domain.member.presentation
+package web.remember.domain.member.application
 
 import web.remember.domain.member.Member
 import web.remember.domain.member.MemberRepository

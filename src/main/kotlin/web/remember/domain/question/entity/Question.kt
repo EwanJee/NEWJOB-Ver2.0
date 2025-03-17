@@ -1,11 +1,13 @@
-package web.remember.domain.question
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
+package web.remember.domain.question.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import web.remember.domain.question.Type.CAREER
-import web.remember.domain.question.Type.RETIREMENT
+import web.remember.domain.question.entity.Type.CAREER
+import web.remember.domain.question.entity.Type.RETIREMENT
 import java.util.*
 
 @Table(name = "question")
@@ -40,6 +42,7 @@ enum class Type {
     RETIREMENT,
 }
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class QuestionGroup {
     CAREER_WHAT,
     CAREER_HOW,

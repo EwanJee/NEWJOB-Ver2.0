@@ -1,0 +1,10 @@
+logging:
+  level:
+    io.netty: DEBUG
+    org.springframework.web.reactive.function.client: DEBUG
+    web: debug
+
+spring:
+  jpa:
+    show-sql: true
+    generate-ddl: true

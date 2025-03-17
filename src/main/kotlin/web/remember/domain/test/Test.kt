@@ -2,7 +2,7 @@ package web.remember.domain.test
 
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
-import web.remember.domain.question.Type
+import web.remember.domain.question.entity.Type
 
 @Table(name = "test")
 @Entity

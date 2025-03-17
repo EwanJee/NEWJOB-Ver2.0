@@ -1,7 +1,7 @@
 package web.remember.domain.member.application
 
-import web.remember.domain.member.Member
-import web.remember.domain.member.MemberRepository
+import web.remember.domain.member.entity.Member
+import web.remember.domain.member.repository.MemberRepository
 import web.remember.domain.member.dto.RequestCreateMemberDto
 import web.remember.domain.member.dto.ResponseCreateMemberDto
 

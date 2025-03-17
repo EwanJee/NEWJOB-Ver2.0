@@ -1,5 +1,5 @@
 spring:
+  cache:
+    type: redis
   jpa:
     open-in-view: false
-  profiles:
-    include: db

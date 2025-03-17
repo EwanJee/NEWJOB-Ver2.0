@@ -1,4 +1,4 @@
-package web.remember.domain.member
+package web.remember.domain.member.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

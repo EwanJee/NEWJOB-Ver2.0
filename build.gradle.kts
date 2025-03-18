@@ -20,6 +20,9 @@ repositories {
 }
 
 dependencies {
+    // pdf editor
+    implementation("com.itextpdf:itext7-core:8.0.3")
+    implementation("com.itextpdf:itext7-layout:8.0.3")
     // jsonb
     implementation("com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations")
     implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.9.5")

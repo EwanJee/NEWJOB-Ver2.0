@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package web.remember.domain.test
 
 import io.hypersistence.utils.hibernate.type.json.JsonType

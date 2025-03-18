@@ -4,14 +4,17 @@ package web.remember.domain.test
 
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
-import web.remember.domain.question.entity.Type
+import web.remember.domain.question.entity.TestType
 
 @Table(name = "test")
 @Entity
 class Test(
     memberId: String,
-    testType: Type,
+    testType: TestType,
+    data: MutableMap<String, String>?,
 ) {
+    constructor(memberId: String, testType: TestType) : this(memberId, testType, null)
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -21,9 +24,9 @@ class Test(
     val memberId: String = memberId
 
     @Column(name = "test_type")
-    val testType: Type = testType
+    val testType: TestType = testType
 
     @Column(name = "test_type")
     @org.hibernate.annotations.Type(JsonType::class)
-    val data: Map<String, String> = mutableMapOf()
+    val data: MutableMap<String, String>? = data
 }

@@ -6,8 +6,8 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import web.remember.domain.question.entity.Type.CAREER
-import web.remember.domain.question.entity.Type.RETIREMENT
+import web.remember.domain.question.entity.TestType.CAREER
+import web.remember.domain.question.entity.TestType.RETIREMENT
 import java.util.*
 
 @Table(name = "question")
@@ -22,7 +22,7 @@ class Question(
     val id: String = UUID.randomUUID().toString()
 
     @Column(name = "type")
-    val type: Type = QuestionGroup.convertToType(group)
+    val type: TestType = QuestionGroup.convertToType(group)
 
     @Column(name = "group")
     val group: QuestionGroup = group
@@ -37,7 +37,7 @@ class Question(
     val anm: QuestionANM? = anm
 }
 
-enum class Type {
+enum class TestType {
     CAREER,
     RETIREMENT,
 }
@@ -69,7 +69,7 @@ enum class QuestionGroup {
     ;
 
     companion object {
-        fun convertToType(group: QuestionGroup): Type {
+        fun convertToType(group: QuestionGroup): TestType {
             if (group.name.startsWith("CAREER")) {
                 return CAREER
             }

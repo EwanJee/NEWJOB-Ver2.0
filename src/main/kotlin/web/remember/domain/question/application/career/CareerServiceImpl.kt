@@ -3,7 +3,7 @@ package web.remember.domain.question.application.career
 import web.remember.domain.question.entity.Question
 import web.remember.domain.question.entity.QuestionANM
 import web.remember.domain.question.entity.QuestionGroup
-import web.remember.domain.question.entity.Type
+import web.remember.domain.question.entity.TestType
 import web.remember.domain.question.repository.QuestionRepository
 
 class CareerServiceImpl(
@@ -19,7 +19,7 @@ class CareerServiceImpl(
                 }
             }
         val questionSet = mutableSetOf<String>()
-        val questions: List<Question> = questionRepository.findByType(Type.CAREER)
+        val questions: List<Question> = questionRepository.findByType(TestType.CAREER)
 
         val abilityQuestions = makeAbilityQuestions(questions)
         abilityQuestions.forEach {

@@ -22,19 +22,19 @@ class Question(
     val id: String = UUID.randomUUID().toString()
 
     @Column(name = "type")
-    val type: String = QuestionGroup.convertToType(group).toString()
+    val type: Type = QuestionGroup.convertToType(group)
 
-    @Column(name = "group", length = 10)
+    @Column(name = "group")
     val group: QuestionGroup = group
 
     @Column(name = "category", length = 20)
-    val category: String? = QuestionGroup.convertToCategory(group).toString()
+    val ctype: QuestionCtype? = QuestionGroup.convertToCtype(group)
 
     @Column(name = "score")
     val score: Int = score
 
     @Column(name = "anm", length = 20)
-    val anm: String? = anm.toString()
+    val anm: QuestionANM? = anm
 }
 
 enum class Type {
@@ -76,35 +76,35 @@ enum class QuestionGroup {
             return RETIREMENT
         }
 
-        fun convertToCategory(group: QuestionGroup): QuestionCTYPE? =
+        fun convertToCtype(group: QuestionGroup): QuestionCtype? =
             when (group) {
-                CAREER_WHAT -> QuestionCTYPE.CONTROL
-                CAREER_HOW -> QuestionCTYPE.CONNECTION
-                CAREER_WHY -> QuestionCTYPE.CONDITION
+                CAREER_WHAT -> QuestionCtype.CONTROL
+                CAREER_HOW -> QuestionCtype.CONNECTION
+                CAREER_WHY -> QuestionCtype.CONDITION
 
-                CAREER_성과평가 -> QuestionCTYPE.CONNECTION
-                CAREER_네트워크 -> QuestionCTYPE.CHARACTER
-                CAREER_팀웍동료 -> QuestionCTYPE.CONTROL
+                CAREER_성과평가 -> QuestionCtype.CONNECTION
+                CAREER_네트워크 -> QuestionCtype.CHARACTER
+                CAREER_팀웍동료 -> QuestionCtype.CONTROL
 
-                CAREER_조직 -> QuestionCTYPE.CONNECTION
-                CAREER_업계 -> QuestionCTYPE.CHARACTER
-                CAREER_전문분야 -> QuestionCTYPE.CHALLENGE
+                CAREER_조직 -> QuestionCtype.CONNECTION
+                CAREER_업계 -> QuestionCtype.CHARACTER
+                CAREER_전문분야 -> QuestionCtype.CHALLENGE
 
-                CAREER_영역확장 -> QuestionCTYPE.CHARACTER
-                CAREER_영역개발 -> QuestionCTYPE.CONTROL
-                CAREER_업무재조성 -> QuestionCTYPE.CONDITION
+                CAREER_영역확장 -> QuestionCtype.CHARACTER
+                CAREER_영역개발 -> QuestionCtype.CONTROL
+                CAREER_업무재조성 -> QuestionCtype.CONDITION
 
-                CAREER_지원개발 -> QuestionCTYPE.CONDITION
-                CAREER_학습계획 -> QuestionCTYPE.CHARACTER
-                CAREER_실천 -> QuestionCTYPE.CHALLENGE
+                CAREER_지원개발 -> QuestionCtype.CONDITION
+                CAREER_학습계획 -> QuestionCtype.CHARACTER
+                CAREER_실천 -> QuestionCtype.CHALLENGE
 
-                CAREER_월드지수 -> QuestionCTYPE.WORLD
+                CAREER_월드지수 -> QuestionCtype.WORLD
                 else -> null
             }
     }
 }
 
-enum class QuestionCTYPE {
+enum class QuestionCtype {
     // ONLY IF CAREER
     CHARACTER,
     CONNECTION,

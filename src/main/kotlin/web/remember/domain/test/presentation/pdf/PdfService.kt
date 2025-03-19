@@ -1,4 +1,4 @@
-package web.remember.domain.test.pdf
+package web.remember.domain.test.presentation.pdf
 
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile

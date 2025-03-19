@@ -1,4 +1,4 @@
-package web.remember.domain.test.career
+package web.remember.domain.test.presentation.career
 
 import org.springframework.stereotype.Service
 import web.remember.domain.test.dto.RequestScoreUpdateDto

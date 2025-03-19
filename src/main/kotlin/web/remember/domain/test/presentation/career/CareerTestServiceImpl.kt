@@ -1,4 +1,4 @@
-package web.remember.domain.test.career
+package web.remember.domain.test.presentation.career
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.annotation.PostConstruct
@@ -8,9 +8,9 @@ import web.remember.domain.question.entity.QuestionCtype
 import web.remember.domain.question.entity.QuestionGroup
 import web.remember.domain.question.entity.TestType
 import web.remember.domain.question.repository.QuestionRepository
-import web.remember.domain.test.Test
-import web.remember.domain.test.TestRepository
 import web.remember.domain.test.dto.RequestScoreUpdateDto
+import web.remember.domain.test.entity.Test
+import web.remember.domain.test.repository.TestRepository
 import java.util.concurrent.TimeUnit
 
 class CareerTestServiceImpl(
@@ -30,6 +30,12 @@ class CareerTestServiceImpl(
         questionMap: Map<String, List<String>>,
         memberId: String,
     ): String {
+        if (questionMap.isEmpty()) {
+            throw IllegalArgumentException("질문이 없습니다.")
+        }
+        if (!isUUID(memberId)) {
+            throw IllegalArgumentException("잘못된 memberId입니다.")
+        }
         val testEntity = testRepository.save(Test(memberId = memberId, testType = TestType.CAREER))
         questionMap
             .forEach { (group, questions) ->
@@ -111,4 +117,7 @@ class CareerTestServiceImpl(
             )
         testRepository.save(test)
     }
+
+    private fun isUUID(uuid: String): Boolean =
+        uuid.matches(Regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\$"))
 }

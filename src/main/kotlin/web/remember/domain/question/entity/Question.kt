@@ -24,7 +24,7 @@ class Question(
     @Column(name = "type")
     val type: TestType = QuestionGroup.convertToType(group)
 
-    @Column(name = "group")
+    @Column(name = "q_group")
     val group: QuestionGroup = group
 
     @Column(name = "category", length = 20)

@@ -2,6 +2,7 @@ package web.remember.domain.question.application
 
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
+import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import web.remember.domain.error.CustomException
 import web.remember.domain.question.entity.Question
@@ -11,6 +12,7 @@ import web.remember.domain.question.repository.QuestionRepository
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
+@Service
 class QuestionServiceImpl(
     private val questionRepository: QuestionRepository,
 ) : QuestionService {

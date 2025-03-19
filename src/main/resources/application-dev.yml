@@ -5,6 +5,9 @@ logging:
     web: debug
 
 spring:
+  sql:
+    init:
+      mode: always
   jpa:
     show-sql: true
     generate-ddl: true

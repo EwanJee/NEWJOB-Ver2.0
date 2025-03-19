@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.annotation.PostConstruct
 import org.springframework.data.redis.core.HashOperations
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.stereotype.Service
 import web.remember.domain.question.entity.QuestionCtype
 import web.remember.domain.question.entity.QuestionGroup
 import web.remember.domain.question.entity.TestType
@@ -13,6 +14,7 @@ import web.remember.domain.test.entity.Test
 import web.remember.domain.test.repository.TestRepository
 import java.util.concurrent.TimeUnit
 
+@Service
 class CareerTestServiceImpl(
     private val testRepository: TestRepository,
     private val redisTemplate: RedisTemplate<String, String>,

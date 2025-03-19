@@ -1,11 +1,13 @@
 package web.remember.domain.question.application.career
 
+import org.springframework.stereotype.Service
 import web.remember.domain.question.entity.Question
 import web.remember.domain.question.entity.QuestionANM
 import web.remember.domain.question.entity.QuestionGroup
 import web.remember.domain.question.entity.TestType
 import web.remember.domain.question.repository.QuestionRepository
 
+@Service
 class CareerServiceImpl(
     private val questionRepository: QuestionRepository,
 ) : CareerService {

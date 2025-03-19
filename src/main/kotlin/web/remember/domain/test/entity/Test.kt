@@ -26,7 +26,7 @@ class Test(
     @Column(name = "test_type")
     val testType: TestType = testType
 
-    @Column(name = "test_type")
+    @Column(name = "data", columnDefinition = "jsonb")
     @org.hibernate.annotations.Type(JsonType::class)
     val data: MutableMap<String, String>? = data
 }

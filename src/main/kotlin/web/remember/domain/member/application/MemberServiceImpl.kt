@@ -1,10 +1,12 @@
 package web.remember.domain.member.application
 
+import org.springframework.stereotype.Service
 import web.remember.domain.member.dto.RequestCreateMemberDto
 import web.remember.domain.member.dto.ResponseCreateMemberDto
 import web.remember.domain.member.entity.Member
 import web.remember.domain.member.repository.MemberRepository
 
+@Service
 class MemberServiceImpl(
     private val memberRepository: MemberRepository,
 ) : MemberService {

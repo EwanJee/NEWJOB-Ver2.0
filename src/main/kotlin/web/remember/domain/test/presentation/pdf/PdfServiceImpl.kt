@@ -5,12 +5,14 @@ import com.itextpdf.io.source.ByteArrayOutputStream
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfReader
 import com.itextpdf.kernel.pdf.PdfWriter
+import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import web.remember.domain.question.entity.QuestionANM
 import web.remember.domain.question.entity.QuestionCtype
 import web.remember.domain.question.entity.QuestionGroup
 import java.io.ByteArrayInputStream
 
+@Service
 class PdfServiceImpl : PdfService {
     override fun makeCareerPdf(
         name: String,

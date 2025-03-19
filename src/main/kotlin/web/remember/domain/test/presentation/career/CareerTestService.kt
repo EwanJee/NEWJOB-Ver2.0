@@ -1,9 +1,7 @@
 package web.remember.domain.test.presentation.career
 
-import org.springframework.stereotype.Service
 import web.remember.domain.test.dto.RequestScoreUpdateDto
 
-@Service
 interface CareerTestService {
     fun startTest(
         questionMap: Map<String, List<String>>,

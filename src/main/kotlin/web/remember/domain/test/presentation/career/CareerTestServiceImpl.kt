@@ -5,10 +5,13 @@ import jakarta.annotation.PostConstruct
 import org.springframework.data.redis.core.HashOperations
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import web.remember.domain.error.CustomException
 import web.remember.domain.question.entity.QuestionCtype
 import web.remember.domain.question.entity.QuestionGroup
 import web.remember.domain.question.entity.TestType
 import web.remember.domain.question.repository.QuestionRepository
+import web.remember.domain.question.repository.dto.ResponseFinishTestDto
 import web.remember.domain.test.dto.RequestScoreUpdateDto
 import web.remember.domain.test.entity.Test
 import web.remember.domain.test.repository.TestRepository
@@ -28,15 +31,16 @@ class CareerTestServiceImpl(
         hashOperations = redisTemplate.opsForHash()
     }
 
+    @Transactional
     override fun startTest(
         questionMap: Map<String, List<String>>,
         memberId: String,
     ): String {
         if (questionMap.isEmpty()) {
-            throw IllegalArgumentException("질문이 없습니다.")
+            throw CustomException("질문이 없습니다.")
         }
         if (!isUUID(memberId)) {
-            throw IllegalArgumentException("잘못된 memberId입니다.")
+            throw CustomException("잘못된 memberId입니다.")
         }
         val testEntity = testRepository.save(Test(memberId = memberId, testType = TestType.CAREER))
         questionMap
@@ -71,6 +75,7 @@ class CareerTestServiceImpl(
         }
     }
 
+    @Transactional
     override fun finishTest(
         memberId: String,
         testId: String,
@@ -95,12 +100,15 @@ class CareerTestServiceImpl(
             val values = hashOperations.entries(it)
             values.forEach { (questionId, score) ->
                 map[group.name] = map[group.name]!! + score.toInt()
-                val data = questionRepository.findAnmAndScoreAndCtypeById(questionId)
-                val anm: String = data[0]
-                val weight: Int = data[1].toInt()
-                val ctype: String = data[2]
+                val data: ResponseFinishTestDto = questionRepository.findAnmsAndScoreAndCtypeById(questionId)
+                val anms: List<String>? = data.anms
+                val weight: Int = data.score
+                val ctype: String = data.ctype
                 map[ctype] = map[ctype]!! + score.toInt()
-                if (anm != "NULL") {
+                if (anms == null) {
+                    return@forEach
+                }
+                anms.forEach { anm ->
                     if (!map.containsKey(anm)) {
                         map[anm] = score.toInt() * weight
                     } else {

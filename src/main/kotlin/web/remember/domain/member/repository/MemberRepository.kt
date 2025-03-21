@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository
 import web.remember.domain.member.entity.Member
 
 @Repository
-interface MemberRepository : JpaRepository<Member, String>
+interface MemberRepository : JpaRepository<Member, String> {
+    fun existsByPhoneNumber(phoneNumber: String): Boolean
+}

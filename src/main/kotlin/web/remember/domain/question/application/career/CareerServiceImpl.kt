@@ -1,6 +1,7 @@
 package web.remember.domain.question.application.career
 
 import org.springframework.stereotype.Service
+import web.remember.domain.error.CustomException
 import web.remember.domain.question.entity.Question
 import web.remember.domain.question.entity.QuestionANM
 import web.remember.domain.question.entity.QuestionGroup
@@ -11,12 +12,12 @@ import web.remember.domain.question.repository.QuestionRepository
 class CareerServiceImpl(
     private val questionRepository: QuestionRepository,
 ) : CareerService {
-    override fun makeQuestion(): Map<String, List<String>> {
+    override fun makeQuestion(): Map<String, Map<String, String>> {
         val checkMap =
-            mutableMapOf<String, MutableList<String>>().apply {
+            mutableMapOf<String, MutableMap<String, String>>().apply {
                 QuestionGroup.entries.forEach {
                     if (it.name.startsWith("CAREER")) {
-                        put(it.name, mutableListOf())
+                        put(it.name, mutableMapOf())
                     }
                 }
             }
@@ -25,17 +26,17 @@ class CareerServiceImpl(
 
         val abilityQuestions = makeAbilityQuestions(questions)
         abilityQuestions.forEach {
-            checkMap[it.group.name]!!.add(it.id)
+            checkMap[it.group.name]!![it.id] = it.content
             questionSet.add(it.id)
         }
         val networkPowerQuestions = makeNetworkPowerQuestions(questions)
         networkPowerQuestions.forEach {
-            checkMap[it.group.name]!!.add(it.id)
+            checkMap[it.group.name]!![it.id] = it.content
             questionSet.add(it.id)
         }
         val moveOnQuestions = makeMoveOnQuestions(questions)
         moveOnQuestions.forEach {
-            checkMap[it.group.name]!!.add(it.id)
+            checkMap[it.group.name]!![it.id] = it.content
             questionSet.add(it.id)
         }
         val numberOfQuestionToAdd = 80 - checkMap.values.size
@@ -45,7 +46,7 @@ class CareerServiceImpl(
                 val filtered =
                     questions.filter { it.group.name == key && !questionSet.contains(it.id) }.shuffled().take(add)
                 filtered.forEach {
-                    checkMap[key]!!.add(it.id)
+                    checkMap[key]!![it.id] = it.content
                 }
             }
         }
@@ -53,15 +54,18 @@ class CareerServiceImpl(
             val filtered =
                 questions.filter { !questionSet.contains(it.id) }.shuffled().take(numberOfQuestionToAdd)
             filtered.forEach {
-                checkMap[it.group.name]!!.add(it.id)
+                checkMap[it.group.name]!![it.id] = it.content
             }
+        }
+        if (checkMap.values.size != 80) {
+            throw CustomException("질문 생성에 실패했습니다. 다시 시도해주세요")
         }
         return checkMap
     }
 
     @Suppress("ktlint:standard:property-naming")
     private fun makeMoveOnQuestions(questions: List<Question>): List<Question> {
-        val moveOnQuestions = questions.stream().filter { it.anm == QuestionANM.MOVE_ON }.toList()
+        val moveOnQuestions = questions.filter { it.anms?.contains(QuestionANM.MOVE_ON) == true }
 
         val 성과평가 = moveOnQuestions.filter { it.group == QuestionGroup.CAREER_성과평가 }
         val filtered성과평가 = filter(1, 0, 0, 성과평가)
@@ -97,7 +101,7 @@ class CareerServiceImpl(
 
     @Suppress("ktlint:standard:property-naming")
     private fun makeNetworkPowerQuestions(questions: List<Question>): List<Question> {
-        val networkPowerQuestions = questions.stream().filter { it.anm == QuestionANM.NETWORK_POWER }.toList()
+        val networkPowerQuestions = questions.filter { it.anms?.contains(QuestionANM.NETWORK_POWER) == true }
         val 성과평가 = networkPowerQuestions.filter { it.group == QuestionGroup.CAREER_성과평가 }
         val filtered성과평가 = filter(0, 2, 0, 성과평가)
 
@@ -144,7 +148,7 @@ class CareerServiceImpl(
 
     @Suppress("ktlint:standard:property-naming")
     private fun makeAbilityQuestions(questions: List<Question>): List<Question> {
-        val abilityQuestions = questions.stream().filter { it.anm == QuestionANM.ABILITY }.toList()
+        val abilityQuestions = questions.filter { it.anms?.contains(QuestionANM.ABILITY) == true }
         val 영역확장 = abilityQuestions.filter { it.group == QuestionGroup.CAREER_영역확장 }
         val filtered영역확장 = filter(2, 1, 0, 영역확장)
 

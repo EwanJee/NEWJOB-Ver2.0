@@ -2,10 +2,7 @@
 
 package web.remember.domain.question.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import web.remember.domain.question.entity.TestType.CAREER
 import web.remember.domain.question.entity.TestType.RETIREMENT
 import java.util.*
@@ -15,26 +12,34 @@ import java.util.*
 class Question(
     group: QuestionGroup,
     score: Int,
-    anm: QuestionANM?,
+    anm: MutableList<QuestionANM>?,
+    content: String,
 ) {
     @Id
     @Column(name = "id")
     val id: String = UUID.randomUUID().toString()
 
-    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", length = 20)
     val type: TestType = QuestionGroup.convertToType(group)
 
-    @Column(name = "q_group")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "q_group", length = 20)
     val group: QuestionGroup = group
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "category", length = 20)
     val ctype: QuestionCtype? = QuestionGroup.convertToCtype(group)
 
     @Column(name = "score")
     val score: Int = score
 
-    @Column(name = "anm", length = 20)
-    val anm: QuestionANM? = anm
+    @Convert(converter = QuestionANMConverter::class)
+    @Column(name = "anms", columnDefinition = "TEXT")
+    val anms: MutableList<QuestionANM>? = anm
+
+    @Column(name = "content")
+    val content: String = content
 }
 
 enum class TestType {

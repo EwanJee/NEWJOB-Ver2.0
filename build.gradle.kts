@@ -20,6 +20,10 @@ repositories {
 }
 
 dependencies {
+    // Kotlin JDSL
+    implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.5.5")
+    implementation("com.linecorp.kotlin-jdsl:jpql-render:3.5.5")
+    implementation("com.linecorp.kotlin-jdsl:spring-data-jpa-support:3.5.5")
     // pdf editor
     implementation("com.itextpdf:itext7-core:8.0.3")
 //    implementation("com.itextpdf:itext7-layout:8.0.3")

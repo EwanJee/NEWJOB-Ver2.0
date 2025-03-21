@@ -11,8 +11,26 @@ spring:
   jpa:
     show-sql: true
     generate-ddl: true
+    hibernate:
+      ddl-auto: update
 
   data:
     redis:
       host: localhost
       port: 6379
+
+
+  springdoc:
+    swagger-ui:
+      groups-order: DESC
+      tags-sorter: alpha
+      operations-sorter: method
+      disable-swagger-default-url: true
+      display-request-duration: true
+      defaultModelsExpandDepth: 2
+      defaultModelExpandDepth: 2
+    show-actuator: true
+    default-consumes-media-type: application/json
+    default-produces-media-type: application/json
+    writer-with-default-pretty-printer: true
+    model-and-view-allowed: true

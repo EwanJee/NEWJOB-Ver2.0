@@ -7,12 +7,14 @@ import web.remember.domain.question.entity.Question
 import web.remember.domain.question.entity.TestType
 
 @Repository
-interface QuestionRepository : JpaRepository<Question, Long> {
+interface QuestionRepository :
+    JpaRepository<Question, Long>,
+    CustomizedQuestionRepository {
     fun findByType(testType: TestType): List<Question>
 
     @Query("SELECT q.group FROM Question q WHERE q.id = :id")
     fun findGroupById(id: String): String
 
-    @Query("SELECT COALESCE(q.anm, 'NULL'), q.score, q.ctype FROM Question q WHERE q.id = :id")
-    fun findAnmAndScoreAndCtypeById(id: String): List<String>
+//    @Query("SELECT COALESCE(q.anm, 'NULL'), q.score, q.ctype FROM Question q WHERE q.id = :id")
+//    fun findAnmAndScoreAndCtypeById(id: String): List<String>
 }

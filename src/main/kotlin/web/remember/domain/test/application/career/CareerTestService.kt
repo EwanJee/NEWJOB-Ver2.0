@@ -1,10 +1,10 @@
-package web.remember.domain.test.presentation.career
+package web.remember.domain.test.application.career
 
 import web.remember.domain.test.dto.RequestScoreUpdateDto
 
 interface CareerTestService {
     fun startTest(
-        questionMap: Map<String, List<String>>,
+        questionMap: Map<String, Map<String, String>>,
         memberId: String,
     ): String
 

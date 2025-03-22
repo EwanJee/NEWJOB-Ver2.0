@@ -1,4 +1,4 @@
-package web.remember.domain.test.presentation.career
+package web.remember.domain.test.application.career
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.annotation.PostConstruct
@@ -14,33 +14,37 @@ import web.remember.domain.question.repository.QuestionRepository
 import web.remember.domain.question.repository.dto.ResponseFinishTestDto
 import web.remember.domain.test.dto.RequestScoreUpdateDto
 import web.remember.domain.test.entity.Test
+import web.remember.domain.test.repository.RedisHashOperations
 import web.remember.domain.test.repository.TestRepository
-import java.util.concurrent.TimeUnit
 
 @Service
 class CareerTestServiceImpl(
     private val testRepository: TestRepository,
     private val redisTemplate: RedisTemplate<String, String>,
     private val questionRepository: QuestionRepository,
+    private val redisHashOperations: RedisHashOperations,
 ) : CareerTestService {
     private var objectMapper = ObjectMapper()
     private lateinit var hashOperations: HashOperations<String, String, String>
 
     @PostConstruct
     fun init() {
-        hashOperations = redisTemplate.opsForHash()
+        try {
+            hashOperations = redisTemplate.opsForHash()
+            val conn = redisTemplate.connectionFactory?.connection
+            val serverInfo = conn?.serverCommands()?.info("server")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     @Transactional
     override fun startTest(
-        questionMap: Map<String, List<String>>,
+        questionMap: Map<String, Map<String, String>>,
         memberId: String,
     ): String {
         if (questionMap.isEmpty()) {
             throw CustomException("질문이 없습니다.")
-        }
-        if (!isUUID(memberId)) {
-            throw CustomException("잘못된 memberId입니다.")
         }
         val testEntity = testRepository.save(Test(memberId = memberId, testType = TestType.CAREER))
         questionMap
@@ -49,11 +53,9 @@ class CareerTestServiceImpl(
                 hashOperations.putAll(
                     redisKey,
                     questions
-                        .mapIndexed { _, questionId -> questionId to "0" }
+                        .map { (questionId, _) -> questionId to "0" }
                         .toMap(),
                 )
-                // 1 시간 TTL 설정
-                redisTemplate.expire(redisKey, 60 * 60 * 24, TimeUnit.SECONDS)
             }
         return testEntity.id.toString()
     }
@@ -80,7 +82,8 @@ class CareerTestServiceImpl(
         memberId: String,
         testId: String,
     ) {
-        val keys: Set<String> = redisTemplate.keys("$memberId:$testId:*")
+        val pattern = "$memberId:$testId:*"
+        val keys: Set<String> = redisHashOperations.scanKeys(pattern)
         val testType = TestType.CAREER
         val map = mutableMapOf<String, Int>()
         val age: String = hashOperations.get("$memberId:$testId:age", "age").toString()
@@ -125,6 +128,7 @@ class CareerTestServiceImpl(
                 testType = testType,
                 data = converted,
             )
+        redisTemplate.delete(keys)
         testRepository.save(test)
     }
 

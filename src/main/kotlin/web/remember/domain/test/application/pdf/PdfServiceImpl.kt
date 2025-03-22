@@ -1,4 +1,4 @@
-package web.remember.domain.test.presentation.pdf
+package web.remember.domain.test.application.pdf
 
 import com.itextpdf.forms.PdfAcroForm
 import com.itextpdf.io.source.ByteArrayOutputStream

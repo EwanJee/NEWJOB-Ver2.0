@@ -1,4 +1,4 @@
-package web.remember.domain.test.presentation.pdf
+package web.remember.domain.test.application.pdf
 
 import org.springframework.web.multipart.MultipartFile
 

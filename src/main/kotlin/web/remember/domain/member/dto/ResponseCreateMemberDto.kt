@@ -4,4 +4,5 @@ class ResponseCreateMemberDto(
     val id: String,
     val name: String,
     val phoneNumber: String,
+    val industry: String,
 )

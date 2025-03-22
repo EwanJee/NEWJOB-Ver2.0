@@ -5,4 +5,6 @@ import web.remember.domain.member.dto.ResponseCreateMemberDto
 
 interface MemberService {
     fun create(member: RequestCreateMemberDto): ResponseCreateMemberDto
+
+    fun existsById(id: String): Boolean
 }

@@ -8,4 +8,5 @@ data class RequestCreateMemberDto(
     val name: String,
     @RegExp(prefix = "^(010-?)?\\d{3,4}-?\\d{4}\$")
     val phoneNumber: String,
+    val industry: String,
 )

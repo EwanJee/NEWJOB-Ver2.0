@@ -25,26 +25,26 @@ class RedisConfig {
     fun redisConnectionFactory(): RedisConnectionFactory = LettuceConnectionFactory(host, port.toInt())
 
     @Bean
-    fun redisTemplate(): RedisTemplate<*, *> =
-        RedisTemplate<Any, Any>().apply {
-            this.connectionFactory = redisConnectionFactory()
-
-            // // "\xac\xed\x00" 같은 불필요한 해시값을 보지 않기 위해 serializer 설정
-            this.keySerializer = StringRedisSerializer()
-            this.hashKeySerializer = StringRedisSerializer()
-            this.valueSerializer = StringRedisSerializer()
-        }
+    fun redisTemplate(redisConnectionFactory: RedisConnectionFactory): RedisTemplate<String, String> {
+        val template = RedisTemplate<String, String>()
+        template.connectionFactory = redisConnectionFactory // ✅ 주입된 Bean 사용
+        template.keySerializer = StringRedisSerializer()
+        template.hashKeySerializer = StringRedisSerializer()
+        template.valueSerializer = StringRedisSerializer()
+        template.hashValueSerializer = StringRedisSerializer()
+        return template
+    }
 
     @Bean
-    fun cacheManager(): RedisCacheManager {
+    fun cacheManager(redisConnectionFactory: RedisConnectionFactory): RedisCacheManager {
         val config =
             RedisCacheConfiguration
                 .defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10)) // 캐시 TTL 설정 (10분)
+                .entryTtl(Duration.ofMinutes(10))
                 .disableCachingNullValues()
 
         return RedisCacheManager
-            .builder(redisConnectionFactory())
+            .builder(redisConnectionFactory)
             .cacheDefaults(config)
             .build()
     }

@@ -1,7 +1,6 @@
 package web.remember.domain.question.application.career
 
 import org.springframework.stereotype.Service
-import web.remember.domain.error.CustomException
 import web.remember.domain.question.entity.Question
 import web.remember.domain.question.entity.QuestionANM
 import web.remember.domain.question.entity.QuestionGroup
@@ -57,9 +56,9 @@ class CareerServiceImpl(
                 checkMap[it.group.name]!![it.id] = it.content
             }
         }
-        if (checkMap.values.size != 80) {
-            throw CustomException("질문 생성에 실패했습니다. 다시 시도해주세요")
-        }
+//        if (checkMap.values.size != 80) {
+//            throw CustomException("질문 생성에 실패했습니다. 다시 시도해주세요")
+//        }
         return checkMap
     }
 

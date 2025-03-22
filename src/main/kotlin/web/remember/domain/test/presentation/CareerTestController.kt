@@ -1,24 +1,27 @@
-package web.remember.domain.test.application
+package web.remember.domain.test.presentation
 
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import web.remember.domain.error.CustomException
+import web.remember.domain.member.application.MemberService
+import web.remember.domain.test.application.career.CareerTestService
+import web.remember.domain.test.application.dto.RequestCreateCareerTestDto
 import web.remember.domain.test.dto.RequestScoreUpdateDto
-import web.remember.domain.test.presentation.career.CareerTestService
 
 @RestController
 @RequestMapping("/api/v1/career-test")
 class CareerTestController(
     private val careerTestService: CareerTestService,
+    private val memberService: MemberService,
 ) {
     @PostMapping()
     fun startTest(
-        questionMap: Map<String, List<String>>,
-        memberId: String,
+        @RequestBody dto: RequestCreateCareerTestDto,
     ): ResponseEntity<String> {
-        val testId = careerTestService.startTest(questionMap, memberId)
+        if (!memberService.existsById(dto.memberId)) {
+            throw CustomException("존재하지 않는 회원입니다")
+        }
+        val testId = careerTestService.startTest(dto.questionMap, dto.memberId)
         return ResponseEntity.ok(testId)
     }
 

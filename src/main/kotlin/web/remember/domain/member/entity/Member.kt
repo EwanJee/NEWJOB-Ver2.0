@@ -11,6 +11,7 @@ import java.util.UUID
 class Member(
     name: String,
     phoneNumber: String,
+    industry: String,
 ) {
     @Id
     @Column(name = "id")
@@ -21,6 +22,9 @@ class Member(
 
     @Column(name = "phone_number")
     var phoneNumber: String = convert(phoneNumber)
+
+    @Column(name = "industry")
+    var industry: String = industry
 
     private fun convert(phoneNumber: String): String =
         phoneNumber

@@ -18,11 +18,20 @@ class MemberServiceImpl(
         if (isExist) {
             throw CustomException("이미 존재하는 회원입니다")
         }
-        val memberEntity = memberRepository.save(Member(name = member.name, phoneNumber = member.phoneNumber))
+        val memberEntity =
+            Member(
+                name = member.name,
+                phoneNumber = member.phoneNumber,
+                industry = member.industry,
+            )
+        memberRepository.save(memberEntity) // 반환값 사용 X
         return ResponseCreateMemberDto(
             id = memberEntity.id,
-            name = memberEntity.name,
-            phoneNumber = memberEntity.phoneNumber,
+            name = member.name,
+            phoneNumber = member.phoneNumber,
+            industry = member.industry,
         )
     }
+
+    override fun existsById(id: String): Boolean = memberRepository.existsById(id)
 }

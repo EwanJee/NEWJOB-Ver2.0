@@ -26,10 +26,18 @@ class Member(
     @Column(name = "industry")
     var industry: String = industry
 
-    private fun convert(phoneNumber: String): String =
-        phoneNumber
-            .trim()
-            .replace("-", "")
-            .replace("(", "")
-            .replace(")", "")
+    private fun convert(phoneNumber: String): String {
+        val converted =
+            phoneNumber
+                .trim()
+                .replace("-", "")
+                .replace("(", "")
+                .replace(")", "")
+                .replace(" ", "")
+        return if (converted.startsWith("010")) {
+            converted
+        } else {
+            "010$converted"
+        }
+    }
 }

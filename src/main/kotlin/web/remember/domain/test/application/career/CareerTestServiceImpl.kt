@@ -12,8 +12,8 @@ import web.remember.domain.question.entity.QuestionGroup
 import web.remember.domain.question.entity.TestType
 import web.remember.domain.question.repository.QuestionRepository
 import web.remember.domain.question.repository.dto.ResponseFinishTestDto
-import web.remember.domain.test.dto.RequestScoreUpdateDto
 import web.remember.domain.test.entity.Test
+import web.remember.domain.test.presentation.career.dto.RequestScoreUpdateDto
 import web.remember.domain.test.repository.RedisHashOperations
 import web.remember.domain.test.repository.TestRepository
 

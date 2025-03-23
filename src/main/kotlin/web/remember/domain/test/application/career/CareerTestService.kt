@@ -1,6 +1,6 @@
 package web.remember.domain.test.application.career
 
-import web.remember.domain.test.dto.RequestScoreUpdateDto
+import web.remember.domain.test.presentation.career.dto.RequestScoreUpdateDto
 
 interface CareerTestService {
     fun startTest(

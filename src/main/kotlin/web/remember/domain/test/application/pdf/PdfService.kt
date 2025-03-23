@@ -8,4 +8,6 @@ interface PdfService {
         data: MutableMap<String, String>,
         pdf: MultipartFile,
     ): ByteArray
+
+    fun test(pdf: MultipartFile): ByteArray
 }

@@ -1,5 +1,6 @@
 package web.remember.domain.member.presentation
 
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -16,6 +17,6 @@ class MemberController(
 ) {
     @PostMapping()
     fun create(
-        @RequestBody requestDto: RequestCreateMemberDto,
+        @RequestBody @Valid requestDto: RequestCreateMemberDto,
     ): ResponseEntity<ResponseCreateMemberDto> = ResponseEntity.ok(memberService.create(requestDto))
 }

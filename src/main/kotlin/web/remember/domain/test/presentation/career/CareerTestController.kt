@@ -1,12 +1,14 @@
-package web.remember.domain.test.presentation
+package web.remember.domain.test.presentation.career
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import web.remember.domain.error.CustomException
 import web.remember.domain.member.application.MemberService
 import web.remember.domain.test.application.career.CareerTestService
-import web.remember.domain.test.application.dto.RequestCreateCareerTestDto
-import web.remember.domain.test.dto.RequestScoreUpdateDto
+import web.remember.domain.test.presentation.career.dto.RequestCreateCareerTestDto
+import web.remember.domain.test.presentation.career.dto.RequestFinishTest
+import web.remember.domain.test.presentation.career.dto.RequestScoreUpdateDto
+import web.remember.domain.test.presentation.career.dto.RequestUpdateCareerAge
 
 @RestController
 @RequestMapping("/api/v1/career-test")
@@ -26,24 +28,23 @@ class CareerTestController(
     }
 
     @PutMapping("/score")
-    fun updateScore(dto: RequestScoreUpdateDto) {
+    fun updateScore(
+        @RequestBody dto: RequestScoreUpdateDto,
+    ) {
         careerTestService.updateScore(dto)
     }
 
     @PutMapping("/age")
     fun updateCareerAge(
-        testId: String,
-        memberId: String,
-        age: String,
+        @RequestBody dto: RequestUpdateCareerAge,
     ) {
-        careerTestService.updateCareerAge(testId, memberId, age)
+        careerTestService.updateCareerAge(dto.testId, dto.memberId, dto.age)
     }
 
     @PutMapping("/finish")
     fun finishTest(
-        memberId: String,
-        testId: String,
+        @RequestBody dto: RequestFinishTest,
     ) {
-        careerTestService.finishTest(memberId, testId)
+        careerTestService.finishTest(dto.memberId, dto.testId)
     }
 }

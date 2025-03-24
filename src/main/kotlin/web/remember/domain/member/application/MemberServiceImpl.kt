@@ -7,6 +7,7 @@ import web.remember.domain.member.dto.RequestCreateMemberDto
 import web.remember.domain.member.dto.ResponseCreateMemberDto
 import web.remember.domain.member.entity.Member
 import web.remember.domain.member.repository.MemberRepository
+import web.remember.domain.member.repository.jdsl.dto.ResponseNameAndIndustry
 
 @Service
 class MemberServiceImpl(
@@ -34,4 +35,6 @@ class MemberServiceImpl(
     }
 
     override fun existsById(id: String): Boolean = memberRepository.existsById(id)
+
+    override fun findNameAndIndustryById(id: String): ResponseNameAndIndustry = memberRepository.findNameAndIndustryById(id)
 }

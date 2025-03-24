@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>리멤버 - 홈</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="assets/css/bootstrap.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/timerstyles.css">
+  <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="assets/images/icons/favicon.ico">
+  <style>
+    #choices {
+      margin-top: 20px;
+      flex-shrink: 0;
+    }
+
+    #quiz-page {
+      background-color: rgba(0, 0, 0, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100vh;
+      padding-top: 80px;
+    }
+
+    .quiz-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between; /* 질문 + 선택지 간 여백 유지 */
+      text-align: center;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 600px;
+      height: 60vh
+    }
+
+    .question-group {
+      font-weight: bold;
+      font-size: 20px;
+      color: #555;
+      text-align: left;
+    }
+
+    .question-text {
+      font-size: 22px;
+      font-weight: 500;
+      margin: 20px 0;
+      text-align: left;
+
+    }
+
+    .choice-btn {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      background-color: #ffdd57;
+      color: #222;
+      transition: background-color 0.3s ease;
+    }
+
+    .choice-btn:hover {
+      background-color: #ffc107;
+    }
+
+    .choice-btn:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 221, 87, 0.5);
+    }
+  </style>
+</head>
+<body>
+<div class="bg">
+  <div class="bg-color" style="display: none;">
+    <div class="container content">
+      <div class="row">
+        <div class="blazer clearfix">
+          <div class="col-sm-12 text-center">
+            <h1>REMEMBER CAREER ASSESSMENT</h1>
+            <h3>
+              경력진단 테스트는 개인의 성향, 역량, 관심 분야를 분석해 적합한 직무나 경력 방향을 제시하는 도구입니다.
+              주로 설문 형식으로 진행되며, 결과를 통해 자신의 강점과 개선점을 파악할 수 있습니다.
+              진로 설계나 커리어 전환을 고민하는 사람들에게 유용합니다.
+              기업에서는 인재 배치나 역량 개발을 위한 자료로 활용하기도 합니다.
+            </h3>
+            <div style="margin-top: 40px;">
+              <button class="btn btn-lg" id="startButton">
+                시작 하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- .bg-color -->
+</div> <!-- .bg -->
+
+<!-- 퀴즈 영역 -->
+<div id="quiz-page" style="display: none;">
+  <div class="quiz-container">
+    <div class="question-group" id="question-group"></div>
+    <div class="question-text" id="question"></div>
+    <div id="choices"></div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+
+<script>
+  $(document).ready(function (message) {
+    $(".bg-color").fadeIn(1000);
+
+    $("#startButton").on("click", async function () {
+      try {
+        const questionResponse = await fetch("/api/v1/questions/career", { method: "POST" });
+
+        if (!questionResponse.ok) {
+          const errorData = await questionResponse.json();
+          alert(errorData.error);
+          window.location.href = "/"; // index 페이지로 이동
+          return;
+        }
+
+        const questionMap = await questionResponse.json();
+
+        const testStartResponse = await fetch("/api/v1/career-test", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ questionMap })
+        });
+
+        if (!testStartResponse.ok) {
+          const errorData = await testStartResponse.json();
+          alert(errorData.error);
+          window.location.href = "/"; // index 페이지로 이동
+          return;
+        }
+
+        const testId = await testStartResponse.text();
+        // sessionStorage.setItem("testId", testId);
+
+        $(".bg").fadeOut(500, function () {
+          $("#quiz-page").fadeIn(500);
+          startQuiz(questionMap);
+        });
+
+      } catch (error) {
+        console.error("진단 시작 중 오류 발생:", error);
+        alert("테스트 시작에 실패했습니다.");
+      }
+    });
+
+    function startQuiz(questionMap) {
+      const flatQuestions = [];
+      for (const group in questionMap) {
+        const groupQuestions = questionMap[group];
+        for (const id in groupQuestions) {
+          flatQuestions.push({
+            id: id,
+            text: groupQuestions[id],
+            group: group
+          });
+        }
+      }
+
+      let current = 0;
+      const questionEl = document.getElementById("question");
+      const groupEl = document.getElementById("question-group");
+      const choicesEl = document.getElementById("choices");
+
+      const choices = [
+        { label: "전혀 아니다", score: 0 },
+        { label: "아니다", score: 1 },
+        { label: "그렇다", score: 2 },
+        { label: "완전 그렇다", score: 3 }
+      ];
+
+      const responses = {};
+
+      function displayQuestion() {
+        const q = flatQuestions[current];
+        questionEl.textContent = q.text;
+        groupEl.textContent = `[${q.group}]`;
+        choicesEl.innerHTML = "";
+
+        choices.forEach(choice => {
+          const btn = document.createElement("button");
+          btn.textContent = choice.label;
+          btn.className = "choice-btn";
+          btn.onclick = () => {
+            responses[q.id] = choice.score;
+            current++;
+            if (current < flatQuestions.length) {
+              displayQuestion();
+            } else {
+              finishQuiz();
+            }
+          };
+          choicesEl.appendChild(btn);
+        });
+      }
+
+      function finishQuiz() {
+        questionEl.textContent = "검사가 완료되었습니다!";
+        groupEl.textContent = "";
+        choicesEl.innerHTML = "<p>결과를 처리 중입니다...</p>";
+        console.log("응답 결과:", responses);
+
+        // const testId = sessionStorage.getItem("testId");
+
+        // 1. 점수 저장
+        fetch("/api/v1/career-test/score", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            scoreMap: responses
+          })
+        })
+                .then(scoreRes => {
+                  if (!scoreRes.ok) throw new Error("점수 저장 실패");
+
+                  // 2. 검사 종료 처리
+                  return fetch("/api/v1/career-test/finish", {
+                    method: "PUT"
+                  });
+                })
+                .then(finishRes => {
+                  if (!finishRes.ok) throw new Error("검사 종료 실패");
+                  // 결과 페이지로 이동하거나 결과 출력
+                  fetchAndSendStaticPdf();
+                })
+                .catch(err => {
+                  console.error("finishQuiz 오류:", err);
+                  choicesEl.innerHTML = `<p>오류가 발생했습니다. 다시 시도해주세요.</p>`;
+                });
+      }
+
+      async function fetchAndSendStaticPdf() {
+        try {
+          // 1. static pdf를 blob으로 fetch
+          const pdfResponse = await fetch('/report.pdf'); // static 경로이므로 앞에 /만 붙이면 됨
+          const pdfBlob = await pdfResponse.blob();
+          const pdfFile = new File([pdfBlob], "report.pdf", { type: "application/pdf" });
+
+          // 2. FormData 생성
+          const formData = new FormData();
+          formData.append("file", pdfFile); // 서버의 @RequestPart("file")
+
+          // 3. 서버에 전송
+          const response = await fetch("/api/v1/pdf/career/create", {
+            method: "POST",
+            body: formData
+          });
+
+          // 4. 응답 받은 PDF 보여주기
+          // const resultBlob = await response.blob();
+          // const fileURL = URL.createObjectURL(resultBlob);
+
+          // sessionStorage.setItem("pdfUrl", fileURL);
+          window.location.href = "/career/result";
+
+        } catch (err) {
+          console.error("PDF 처리 중 오류:", err);
+          alert("결과 PDF를 불러오는 데 실패했습니다.");
+        }
+      }
+
+
+      displayQuestion();
+    }
+  });
+</script>
+</body>
+</html>

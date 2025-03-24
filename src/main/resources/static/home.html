@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>리멤버 - 홈</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/timerstyles.css">
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="assets/images/icons/favicon.ico">
+</head>
+<body>
+<div class="bg">
+    <div class="bg-color" style="display: none;">
+        <div class="container content">
+            <div class="row">
+                <div class="blazer clearfix">
+                    <div class="col-sm-12 text-center">
+                        <h1>REMEMBER ASSESSMENT</h1>
+                        <h3>원하는 진단을 선택해주세요</h3>
+                        <div style="margin-top: 40px;">
+                            <button class="btn btn-primary btn-lg" id="careerBtn">경력 진단</button>
+                            <button class="btn btn-success btn-lg" id="retirementBtn" style="margin-left: 20px;">퇴직 진단 (개발 ing)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- .bg-color -->
+</div> <!-- .bg -->
+
+<!-- Scripts -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+
+<script>
+    // 페이지 로딩 시 fadeIn 효과
+    $(document).ready(function () {
+        $(".bg-color").fadeIn(1000);
+
+        // 버튼 클릭 시 페이지 이동
+        $("#careerBtn").on("click", function () {
+            $(".bg-color").fadeOut(500, function () {
+                window.location.href = "/career";  // 원하는 경로로 수정
+            });
+        });
+
+        $("#retirementBtn").on("click", function () {
+            $(".bg-color").fadeOut(500, function () {
+                window.location.href = "/retirement";  // 원하는 경로로 수정
+            });
+        });
+    });
+</script>
+</body>
+</html>

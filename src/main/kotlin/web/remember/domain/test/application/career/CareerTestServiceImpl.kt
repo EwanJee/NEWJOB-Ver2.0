@@ -33,7 +33,7 @@ class CareerTestServiceImpl(
         try {
             hashOperations = redisTemplate.opsForHash()
             val conn = redisTemplate.connectionFactory?.connection
-            val serverInfo = conn?.serverCommands()?.info("server")
+//            val serverInfo = conn?.serverCommands()?.info("server")
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -92,7 +92,6 @@ class CareerTestServiceImpl(
     ) {
         val pattern = "$memberId:$testId:*"
         val keys: Set<String> = redisHashOperations.scanKeys(pattern)
-        val testType = TestType.CAREER
         val map = mutableMapOf<String, Int>()
         val age: String = hashOperations.get("$memberId:$testId:age", "age").toString()
 

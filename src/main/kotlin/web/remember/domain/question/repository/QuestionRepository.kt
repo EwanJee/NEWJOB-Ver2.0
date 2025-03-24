@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import web.remember.domain.question.entity.Question
 import web.remember.domain.question.entity.TestType
+import web.remember.domain.question.repository.jdsl.CustomizedQuestionRepository
 
 @Repository
 interface QuestionRepository :

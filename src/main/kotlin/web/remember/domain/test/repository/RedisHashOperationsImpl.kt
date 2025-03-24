@@ -22,7 +22,7 @@ class RedisHashOperationsImpl(
         val result = mutableSetOf<String>()
 
         connection.use {
-            val cursor: Cursor<ByteArray> = it.scan(options)
+            val cursor: Cursor<ByteArray> = it.keyCommands().scan(options)
             cursor.forEachRemaining { item ->
                 result.add(String(item))
             }

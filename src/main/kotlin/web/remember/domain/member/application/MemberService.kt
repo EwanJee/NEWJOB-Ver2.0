@@ -10,4 +10,9 @@ interface MemberService {
     fun existsById(id: String): Boolean
 
     fun findNameAndIndustryById(id: String): ResponseNameAndIndustry
+
+    fun existsByPhoneNumberAndName(
+        phoneNumber: String,
+        name: String,
+    ): Boolean
 }

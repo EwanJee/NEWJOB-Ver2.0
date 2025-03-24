@@ -2,7 +2,6 @@ package web.remember.domain.member.application
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import web.remember.domain.error.CustomException
 import web.remember.domain.member.dto.RequestCreateMemberDto
 import web.remember.domain.member.dto.ResponseCreateMemberDto
 import web.remember.domain.member.entity.Member
@@ -15,9 +14,14 @@ class MemberServiceImpl(
 ) : MemberService {
     @Transactional
     override fun create(member: RequestCreateMemberDto): ResponseCreateMemberDto {
-        val isExist = memberRepository.existsByPhoneNumber(member.phoneNumber)
-        if (isExist) {
-            throw CustomException("이미 존재하는 회원입니다")
+        val memberId = memberRepository.findIdByPhoneNumber(member.phoneNumber)
+        if (memberId != null) {
+            return ResponseCreateMemberDto(
+                id = memberId,
+                name = member.name,
+                phoneNumber = member.phoneNumber,
+                industry = member.industry,
+            )
         }
         val memberEntity =
             Member(
@@ -37,4 +41,9 @@ class MemberServiceImpl(
     override fun existsById(id: String): Boolean = memberRepository.existsById(id)
 
     override fun findNameAndIndustryById(id: String): ResponseNameAndIndustry = memberRepository.findNameAndIndustryById(id)
+
+    override fun existsByPhoneNumberAndName(
+        phoneNumber: String,
+        name: String,
+    ): Boolean = memberRepository.existsByPhoneNumberAndName(phoneNumber, name)
 }

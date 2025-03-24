@@ -1,5 +1,6 @@
 package web.remember.domain.test.presentation.career
 
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import web.remember.domain.error.CustomException
@@ -18,7 +19,7 @@ class CareerTestController(
 ) {
     @PostMapping()
     fun startTest(
-        @RequestBody dto: RequestCreateCareerTestDto,
+        @RequestBody @Valid dto: RequestCreateCareerTestDto,
     ): ResponseEntity<String> {
         if (!memberService.existsById(dto.memberId)) {
             throw CustomException("존재하지 않는 회원입니다")
@@ -29,21 +30,21 @@ class CareerTestController(
 
     @PutMapping("/score")
     fun updateScore(
-        @RequestBody dto: RequestScoreUpdateDto,
+        @RequestBody @Valid dto: RequestScoreUpdateDto,
     ) {
         careerTestService.updateScore(dto)
     }
 
     @PutMapping("/age")
     fun updateCareerAge(
-        @RequestBody dto: RequestUpdateCareerAge,
+        @RequestBody @Valid dto: RequestUpdateCareerAge,
     ) {
         careerTestService.updateCareerAge(dto.testId, dto.memberId, dto.age)
     }
 
     @PutMapping("/finish")
     fun finishTest(
-        @RequestBody dto: RequestFinishTest,
+        @RequestBody @Valid dto: RequestFinishTest,
     ) {
         careerTestService.finishTest(dto.memberId, dto.testId)
     }

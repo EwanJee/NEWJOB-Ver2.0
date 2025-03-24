@@ -74,6 +74,59 @@ enum class QuestionGroup {
     ;
 
     companion object {
+        fun convertToKorean(group: String): QuestionGroup? =
+            when (group) {
+                "What" -> CAREER_WHAT
+                "How" -> CAREER_HOW
+                "Why" -> CAREER_WHY
+                "Performance_Evaluation" -> CAREER_성과평가
+                "Network" -> CAREER_네트워크
+                "Teamwork" -> CAREER_팀웍동료
+                "Organization" -> CAREER_조직
+                "Industry" -> CAREER_업계
+                "Specialty" -> CAREER_전문분야
+                "Area_Expansion" -> CAREER_영역확장
+                "Area_Development" -> CAREER_영역개발
+                "Business_Restructuring" -> CAREER_업무재조성
+                "Support_Development" -> CAREER_지원개발
+                "Learning_Plan" -> CAREER_학습계획
+                "Practice" -> CAREER_실천
+                "World_Index" -> CAREER_월드지수
+                "Retirement_1" -> RETIREMENT_1
+                "Retirement_2" -> RETIREMENT_2
+                "Retirement_3" -> RETIREMENT_3
+                "Retirement_4" -> RETIREMENT_4
+                "Retirement_5" -> RETIREMENT_5
+                "Retirement_6" -> RETIREMENT_6
+                else -> null
+            }
+
+        fun convertToEnglish(group: QuestionGroup): String =
+            when (group) {
+                CAREER_WHAT -> "What"
+                CAREER_HOW -> "How"
+                CAREER_WHY -> "Why"
+                CAREER_성과평가 -> "Performance_Evaluation"
+                CAREER_네트워크 -> "Network"
+                CAREER_팀웍동료 -> "Teamwork"
+                CAREER_조직 -> "Organization"
+                CAREER_업계 -> "Industry"
+                CAREER_전문분야 -> "Specialty"
+                CAREER_영역확장 -> "Area_Expansion"
+                CAREER_영역개발 -> "Area_Development"
+                CAREER_업무재조성 -> "Business_Restructuring"
+                CAREER_지원개발 -> "Support_Development"
+                CAREER_학습계획 -> "Learning_Plan"
+                CAREER_실천 -> "Practice"
+                CAREER_월드지수 -> "World_Index"
+                RETIREMENT_1 -> "Retirement_1"
+                RETIREMENT_2 -> "Retirement_2"
+                RETIREMENT_3 -> "Retirement_3"
+                RETIREMENT_4 -> "Retirement_4"
+                RETIREMENT_5 -> "Retirement_5"
+                RETIREMENT_6 -> "Retirement_6"
+            }
+
         fun convertToType(group: QuestionGroup): TestType {
             if (group.name.startsWith("CAREER")) {
                 return CAREER

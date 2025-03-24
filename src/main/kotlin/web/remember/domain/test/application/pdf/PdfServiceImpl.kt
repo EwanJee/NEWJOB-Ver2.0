@@ -34,9 +34,9 @@ class PdfServiceImpl : PdfService {
             pdfDoc = PdfDocument(reader, writer)
             val form = PdfAcroForm.getAcroForm(pdfDoc, true)
 
-            QuestionGroup.entries.forEach {
-                val score = data[it.name]
-                when (it.name) {
+            data.entries.forEach {
+                val score = it.value
+                when (it.key) {
                     QuestionGroup.CAREER_WHY.toString() -> {
                         if (form.getField("WHY") != null) form.getField("WHY").setValue(score)
                     }
@@ -122,19 +122,19 @@ class PdfServiceImpl : PdfService {
                     }
 
                     "age" -> {
-                        if (form.getField("LOC") != null) form.getField("LOC").setValue(score)
+                        if (form.getField("LOC") != null) form.getField("LOC").setValue("나의 경력 등고선 위치: $score")
                     }
 
                     QuestionANM.ABILITY.toString() -> {
-                        if (form.getField("AB") != null) form.getField("AB").setValue(score)
+                        if (form.getField("AB") != null) form.getField("AB").setValue("나의 업계 능력 점수: $score")
                     }
 
                     QuestionANM.NETWORK_POWER.toString() -> {
-                        if (form.getField("NETWORKPOWER") != null) form.getField("NETWORKPOWER").setValue(score)
+                        if (form.getField("NETWORKPOWER") != null) form.getField("NETWORKPOWER").setValue("나의 네트워크 파워 점수: $score")
                     }
 
                     QuestionANM.MOVE_ON.toString() -> {
-                        if (form.getField("MO") != null) form.getField("MO").setValue(score)
+                        if (form.getField("MO") != null) form.getField("MO").setValue("나의 전직 가능성 점수: $score")
                     }
                 }
             }

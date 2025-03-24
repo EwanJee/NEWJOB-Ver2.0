@@ -20,4 +20,6 @@ interface CareerTestService {
         memberId: String,
         age: String,
     )
+
+    fun findDataById(testId: String): MutableMap<String, String>
 }

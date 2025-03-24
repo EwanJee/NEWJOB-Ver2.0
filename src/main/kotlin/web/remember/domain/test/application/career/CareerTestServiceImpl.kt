@@ -7,11 +7,12 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import web.remember.domain.error.CustomException
+import web.remember.domain.question.application.dto.ResponseFinishTestDto
+import web.remember.domain.question.entity.QuestionANM
 import web.remember.domain.question.entity.QuestionCtype
 import web.remember.domain.question.entity.QuestionGroup
 import web.remember.domain.question.entity.TestType
 import web.remember.domain.question.repository.QuestionRepository
-import web.remember.domain.question.repository.dto.ResponseFinishTestDto
 import web.remember.domain.test.entity.Test
 import web.remember.domain.test.presentation.career.dto.RequestScoreUpdateDto
 import web.remember.domain.test.repository.RedisHashOperations
@@ -49,7 +50,8 @@ class CareerTestServiceImpl(
         val testEntity = testRepository.save(Test(memberId = memberId, testType = TestType.CAREER))
         questionMap
             .forEach { (group, questions) ->
-                val redisKey = "$memberId:${testEntity.id}:$group"
+                val groupKey = QuestionGroup.convertToEnglish(QuestionGroup.valueOf(group))
+                val redisKey = "$memberId:${testEntity.id}:$groupKey"
                 hashOperations.putAll(
                     redisKey,
                     questions
@@ -69,10 +71,16 @@ class CareerTestServiceImpl(
         hashOperations.put(key, "age", age)
     }
 
+    override fun findDataById(testId: String): MutableMap<String, String> {
+        val data = testRepository.findDataById(testId.toLong()) ?: throw CustomException("데이터를 찾을 수 없습니다.")
+        return data
+    }
+
     override fun updateScore(dto: RequestScoreUpdateDto) {
         dto.scoreMap.forEach { (questionId, score) ->
-            val group: String = questionRepository.findGroupById(questionId)
-            val key = "${dto.memberId}:${dto.testId}:$group"
+            val groupInKorean: String = questionRepository.findGroupById(questionId)
+            val groupInEnglish = QuestionGroup.convertToEnglish(QuestionGroup.valueOf(groupInKorean))
+            val key = "${dto.memberId}:${dto.testId}:$groupInEnglish"
             hashOperations.increment(key, questionId, score.toLong())
         }
     }
@@ -96,7 +104,7 @@ class CareerTestServiceImpl(
             if (it.endsWith("age")) {
                 return@forEach
             }
-            val group = QuestionGroup.valueOf(it.split(":")[2])
+            val group = QuestionGroup.convertToKorean(it.split(":")[2]) ?: return@forEach
             if (!map.containsKey(group.name)) {
                 map[group.name] = 0
             }
@@ -104,11 +112,11 @@ class CareerTestServiceImpl(
             values.forEach { (questionId, score) ->
                 map[group.name] = map[group.name]!! + score.toInt()
                 val data: ResponseFinishTestDto = questionRepository.findAnmsAndScoreAndCtypeById(questionId)
-                val anms: List<String>? = data.anms
+                val anms: List<String> = data.anms
                 val weight: Int = data.score
                 val ctype: String = data.ctype
                 map[ctype] = map[ctype]!! + score.toInt()
-                if (anms == null) {
+                if (anms.isEmpty()) {
                     return@forEach
                 }
                 anms.forEach { anm ->
@@ -122,14 +130,21 @@ class CareerTestServiceImpl(
         }
         val converted: MutableMap<String, String> = map.mapValues { it.value.toString() }.toMutableMap()
         converted["age"] = age
-        val test =
-            Test(
-                memberId = memberId,
-                testType = testType,
-                data = converted,
-            )
+        converted[QuestionANM.MOVE_ON.name] =
+            (
+                converted[QuestionANM.MOVE_ON.name]?.toInt() ?: 0 +
+                    (
+                        (
+                            (
+                                converted[QuestionANM.ABILITY.name]?.toInt()
+                                    ?: 0
+                            ) + (converted[QuestionANM.NETWORK_POWER.name]?.toInt() ?: 0)
+                        ) / 3
+                    )
+            ).toString()
+        val test = testRepository.findById(testId.toLong()).orElseThrow { CustomException("테스트를 찾을 수 없습니다.") }
+        test.data = converted
         redisTemplate.delete(keys)
-        testRepository.save(test)
     }
 
     private fun isUUID(uuid: String): Boolean =

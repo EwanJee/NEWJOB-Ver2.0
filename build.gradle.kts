@@ -20,6 +20,8 @@ repositories {
 }
 
 dependencies {
+    // 카카오톡 알림톡 API
+    implementation("net.nurigo:sdk:4.3.2")
     // Kotlin JDSL
     implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.5.5")
     implementation("com.linecorp.kotlin-jdsl:jpql-render:3.5.5")

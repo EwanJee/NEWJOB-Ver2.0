@@ -4,8 +4,10 @@ package web.remember.domain.test.entity
 
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicUpdate
 import web.remember.domain.question.entity.TestType
 
+@DynamicUpdate
 @Table(name = "test")
 @Entity
 class Test(
@@ -23,10 +25,11 @@ class Test(
     @Column(name = "member_id")
     val memberId: String = memberId
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "test_type")
     val testType: TestType = testType
 
     @Column(name = "data", columnDefinition = "jsonb")
     @org.hibernate.annotations.Type(JsonType::class)
-    val data: MutableMap<String, String>? = data
+    var data: MutableMap<String, String>? = data
 }

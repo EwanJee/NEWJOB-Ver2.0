@@ -34,6 +34,8 @@ class PdfServiceImpl : PdfService {
             pdfDoc = PdfDocument(reader, writer)
             val form = PdfAcroForm.getAcroForm(pdfDoc, true)
 
+            if (form.getField(("NAME")) != null) form.getField("NAME").setValue(name)
+
             data.entries.forEach {
                 val score = it.value
                 when (it.key) {
@@ -126,15 +128,19 @@ class PdfServiceImpl : PdfService {
                     }
 
                     QuestionANM.ABILITY.toString() -> {
-                        if (form.getField("AB") != null) form.getField("AB").setValue("나의 업계 능력 점수: $score")
+                        if (form.getField("AB") != null) form.getField("AB").setValue(" 나의 업계 능력 점수: $score")
                     }
 
                     QuestionANM.NETWORK_POWER.toString() -> {
-                        if (form.getField("NETWORKPOWER") != null) form.getField("NETWORKPOWER").setValue("나의 네트워크 파워 점수: $score")
+                        if (form.getField("NETWORKPOWER") != null) {
+                            form
+                                .getField("NETWORKPOWER")
+                                .setValue(" 나의 네트워크 파워 점수: $score")
+                        }
                     }
 
                     QuestionANM.MOVE_ON.toString() -> {
-                        if (form.getField("MO") != null) form.getField("MO").setValue("나의 전직 가능성 점수: $score")
+                        if (form.getField("MO") != null) form.getField("MO").setValue(" 나의 전직 가능성 점수: $score")
                     }
                 }
             }

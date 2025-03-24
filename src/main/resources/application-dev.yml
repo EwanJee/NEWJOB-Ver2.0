@@ -3,34 +3,41 @@ logging:
     io.netty: DEBUG
     org.springframework.web.reactive.function.client: DEBUG
     web: debug
-
 spring:
+  flyway:
+    baseline-on-migrate: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/mydatabase
+    username: myuser
+    password: secret
   sql:
     init:
-      mode: always
+      mode: never
   jpa:
     show-sql: true
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: true
 
   data:
     redis:
       host: localhost
       port: 6379
+  cache:
+    type: redis
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 
-  springdoc:
-    swagger-ui:
-      groups-order: DESC
-      tags-sorter: alpha
-      operations-sorter: method
-      disable-swagger-default-url: true
-      display-request-duration: true
-      defaultModelsExpandDepth: 2
-      defaultModelExpandDepth: 2
-    show-actuator: true
-    default-consumes-media-type: application/json
-    default-produces-media-type: application/json
-    writer-with-default-pretty-printer: true
-    model-and-view-allowed: true
+server:
+  servlet:
+    session:
+      timeout: 30m

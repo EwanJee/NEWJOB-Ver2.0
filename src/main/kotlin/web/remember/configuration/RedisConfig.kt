@@ -10,10 +10,12 @@ import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.StringRedisSerializer
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession
 import java.time.Duration
 
 @Configuration
 @EnableCaching
+@EnableRedisHttpSession
 class RedisConfig {
     @Value("\${spring.data.redis.host}")
     lateinit var host: String
@@ -40,7 +42,7 @@ class RedisConfig {
         val config =
             RedisCacheConfiguration
                 .defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10))
+                .entryTtl(Duration.ofMinutes(30))
                 .disableCachingNullValues()
 
         return RedisCacheManager

@@ -1,0 +1,33 @@
+networks:
+  my_network:
+    driver: bridge
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    image: api
+    ports:
+      - '8080:8080'
+    environment:
+      SPRING_DATASOURCE_URL: ${URL}
+      SPRING_DATASOURCE_USERNAME: ${USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${PASSWORD}
+      SPRING_REDIS_HOST: ${REDIS_HOST}
+      SPRING_REDIS_PORT: 6379
+    networks:
+      - my_network
+
+  nginx:
+    container_name: nginx
+    image: nginx
+    ports:
+      - '80:80'
+    volumes:
+      - ./proxy/nginx.prod.conf:/etc/nginx/nginx.conf
+    networks:
+      - my_network
+    environment:
+      - TZ=Asia/Seoul

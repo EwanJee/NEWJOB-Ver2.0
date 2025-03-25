@@ -27,4 +27,5 @@ replay_pid*
 .kotlin/
 .env
 src/main/resources/application-secret.yml
-
+src/main/resources/bootstrap.yml
+src/main/resources/application-production.yml

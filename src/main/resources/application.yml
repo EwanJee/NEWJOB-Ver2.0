@@ -1,5 +1,5 @@
 spring:
   profiles:
-    active: production
     include: secret
+    active: dev
 

@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile
 interface PdfService {
     fun makeCareerPdf(
         name: String,
+        industry: String,
         data: MutableMap<String, String>,
         pdf: MultipartFile,
     ): ByteArray

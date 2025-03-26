@@ -1,10 +1,13 @@
 package web.remember.domain.test.application.pdf
 
 import com.itextpdf.forms.PdfAcroForm
+import com.itextpdf.io.font.PdfEncodings
 import com.itextpdf.io.source.ByteArrayOutputStream
+import com.itextpdf.kernel.font.PdfFontFactory
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfReader
 import com.itextpdf.kernel.pdf.PdfWriter
+import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import web.remember.domain.error.CustomException
@@ -17,6 +20,7 @@ import java.io.ByteArrayInputStream
 class PdfServiceImpl : PdfService {
     override fun makeCareerPdf(
         name: String,
+        industry: String,
         data: MutableMap<String, String>,
         pdf: MultipartFile,
     ): ByteArray {
@@ -31,10 +35,34 @@ class PdfServiceImpl : PdfService {
             reader = PdfReader(inputStream)
             outputStream = ByteArrayOutputStream()
             writer = PdfWriter(outputStream)
+//            writer.setCompressionLevel(0)
             pdfDoc = PdfDocument(reader, writer)
             val form = PdfAcroForm.getAcroForm(pdfDoc, true)
 
+            val fontPath = ClassPathResource("static/assets/fonts/korean_font.ttf").path
+            println(fontPath)
+            val koreanFont = PdfFontFactory.createFont(fontPath, PdfEncodings.IDENTITY_H)
+
+            // 모든 폼 필드에 한글 폰트 적용
+            form.allFormFields.forEach {
+                it.value.setFont(koreanFont)
+            }
+            for (fieldName in form.allFormFields.keys) {
+                try {
+                    val field = form.getField(fieldName)
+                    field.setFont(koreanFont)
+                } catch (e: Exception) {
+                    println("필드 $fieldName 폰트 설정 중 오류: ${e.message}")
+                }
+            }
+
             if (form.getField(("NAME")) != null) form.getField("NAME").setValue(name)
+            val todayDate =
+                java.time.LocalDate
+                    .now()
+                    .toString()
+            if (form.getField("DATE") != null) form.getField("DATE").setValue(todayDate)
+            if (form.getField("INDUSTRY") != null) form.getField("INDUSTRY").setValue(industry)
 
             data.entries.forEach {
                 val score = it.value

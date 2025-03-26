@@ -33,11 +33,11 @@ class PdfCareerController(
 
         val dto = memberService.findNameAndIndustryById(memberId)
         val data = careerTestService.findDataById(testId)
-        val pdf: ByteArray = pdfService.makeCareerPdf(dto.name, data, file)
+        val pdf: ByteArray = pdfService.makeCareerPdf(dto.name, dto.industry, data, file)
         httpSession.setAttribute("pdf", pdf)
         return ResponseEntity
             .ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=result.pdf")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report.pdf")
             .contentType(MediaType.APPLICATION_PDF)
             .body(pdf)
     }

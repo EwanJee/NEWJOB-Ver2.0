@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.cache.RedisCacheConfiguration
 import org.springframework.data.redis.cache.RedisCacheManager
 import org.springframework.data.redis.connection.RedisConnectionFactory
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.StringRedisSerializer
@@ -24,30 +26,41 @@ class RedisConfig {
     lateinit var port: String
 
     @Bean
-    fun redisConnectionFactory(): RedisConnectionFactory = LettuceConnectionFactory(host, port.toInt())
+    fun redisConnectionFactory(): RedisConnectionFactory {
+        val redisStandaloneConfig = RedisStandaloneConfiguration(host, 6379)
+//        redisStandaloneConfig.password = RedisPassword.of(port)
 
-    @Bean
-    fun redisTemplate(redisConnectionFactory: RedisConnectionFactory): RedisTemplate<String, String> {
-        val template = RedisTemplate<String, String>()
-        template.connectionFactory = redisConnectionFactory // ✅ 주입된 Bean 사용
-        template.keySerializer = StringRedisSerializer()
-        template.hashKeySerializer = StringRedisSerializer()
-        template.valueSerializer = StringRedisSerializer()
-        template.hashValueSerializer = StringRedisSerializer()
-        return template
+        val clientConfig =
+            LettuceClientConfiguration
+                .builder()
+                .useSsl() // 👉 TLS 활성화!
+                .build()
+
+        return LettuceConnectionFactory(redisStandaloneConfig, clientConfig)
     }
+}
 
-    @Bean
-    fun cacheManager(redisConnectionFactory: RedisConnectionFactory): RedisCacheManager {
-        val config =
-            RedisCacheConfiguration
-                .defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(30))
-                .disableCachingNullValues()
+@Bean
+fun redisTemplate(redisConnectionFactory: RedisConnectionFactory): RedisTemplate<String, String> {
+    val template = RedisTemplate<String, String>()
+    template.connectionFactory = redisConnectionFactory
+    template.keySerializer = StringRedisSerializer()
+    template.hashKeySerializer = StringRedisSerializer()
+    template.valueSerializer = StringRedisSerializer()
+    template.hashValueSerializer = StringRedisSerializer()
+    return template
+}
 
-        return RedisCacheManager
-            .builder(redisConnectionFactory)
-            .cacheDefaults(config)
-            .build()
-    }
+@Bean
+fun cacheManager(redisConnectionFactory: RedisConnectionFactory): RedisCacheManager {
+    val config =
+        RedisCacheConfiguration
+            .defaultCacheConfig()
+            .entryTtl(Duration.ofMinutes(30))
+            .disableCachingNullValues()
+
+    return RedisCacheManager
+        .builder(redisConnectionFactory)
+        .cacheDefaults(config)
+        .build()
 }

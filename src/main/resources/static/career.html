@@ -213,7 +213,6 @@
         questionEl.textContent = "검사가 완료되었습니다!";
         groupEl.textContent = "";
         choicesEl.innerHTML = "<p>결과를 처리 중입니다...</p>";
-        console.log("응답 결과:", responses);
 
         // const testId = sessionStorage.getItem("testId");
 
@@ -263,11 +262,6 @@
             body: formData
           });
 
-          // 4. 응답 받은 PDF 보여주기
-          // const resultBlob = await response.blob();
-          // const fileURL = URL.createObjectURL(resultBlob);
-
-          // sessionStorage.setItem("pdfUrl", fileURL);
           window.location.href = "/career/result";
 
         } catch (err) {

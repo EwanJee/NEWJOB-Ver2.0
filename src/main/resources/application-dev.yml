@@ -4,6 +4,8 @@ logging:
     org.springframework.web.reactive.function.client: DEBUG
     web: debug
 spring:
+  config:
+    import: optional:file:.env[.properties]
   flyway:
     baseline-on-migrate: true
     enabled: false

@@ -20,6 +20,8 @@ repositories {
 }
 
 dependencies {
+    // dotenv
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.2")
 //    implementation("software.amazon.awssdk:s3:2.31.6")
     implementation("io.awspring.cloud:spring-cloud-aws-starter:3.1.1")
     // 카카오톡 알림톡 API
@@ -58,7 +60,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-hateoas")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.session:spring-session-data-redis:3.3.6")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+//    developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.postgresql:postgresql")

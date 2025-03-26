@@ -8,3 +8,5 @@ docker tag api ewanjee/api:latest
 
 # Docker Hub로 이미지 푸시
 docker push ewanjee/api:latest
+
+echo "Docker Hub로 이미지 푸시 완료"

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.data.redis.cache.RedisCacheConfiguration
 import org.springframework.data.redis.cache.RedisCacheManager
 import org.springframework.data.redis.connection.RedisConnectionFactory
@@ -26,7 +27,12 @@ class RedisConfig {
     lateinit var port: String
 
     @Bean
-    fun redisConnectionFactory(): RedisConnectionFactory {
+    @Profile("[dev]")
+    fun redisConnectionFactoryDev(): RedisConnectionFactory = LettuceConnectionFactory(host, port.toInt())
+
+    @Bean
+    @Profile("[production]")
+    fun redisConnectionFactoryProd(): RedisConnectionFactory {
         val redisStandaloneConfig = RedisStandaloneConfiguration(host, 6379)
 //        redisStandaloneConfig.password = RedisPassword.of(port)
 
@@ -38,29 +44,29 @@ class RedisConfig {
 
         return LettuceConnectionFactory(redisStandaloneConfig, clientConfig)
     }
-}
 
-@Bean
-fun redisTemplate(redisConnectionFactory: RedisConnectionFactory): RedisTemplate<String, String> {
-    val template = RedisTemplate<String, String>()
-    template.connectionFactory = redisConnectionFactory
-    template.keySerializer = StringRedisSerializer()
-    template.hashKeySerializer = StringRedisSerializer()
-    template.valueSerializer = StringRedisSerializer()
-    template.hashValueSerializer = StringRedisSerializer()
-    return template
-}
+    @Bean
+    fun redisTemplate(redisConnectionFactory: RedisConnectionFactory): RedisTemplate<String, String> {
+        val template = RedisTemplate<String, String>()
+        template.connectionFactory = redisConnectionFactory
+        template.keySerializer = StringRedisSerializer()
+        template.hashKeySerializer = StringRedisSerializer()
+        template.valueSerializer = StringRedisSerializer()
+        template.hashValueSerializer = StringRedisSerializer()
+        return template
+    }
 
-@Bean
-fun cacheManager(redisConnectionFactory: RedisConnectionFactory): RedisCacheManager {
-    val config =
-        RedisCacheConfiguration
-            .defaultCacheConfig()
-            .entryTtl(Duration.ofMinutes(30))
-            .disableCachingNullValues()
+    @Bean
+    fun cacheManager(redisConnectionFactory: RedisConnectionFactory): RedisCacheManager {
+        val config =
+            RedisCacheConfiguration
+                .defaultCacheConfig()
+                .entryTtl(Duration.ofMinutes(30))
+                .disableCachingNullValues()
 
-    return RedisCacheManager
-        .builder(redisConnectionFactory)
-        .cacheDefaults(config)
-        .build()
+        return RedisCacheManager
+            .builder(redisConnectionFactory)
+            .cacheDefaults(config)
+            .build()
+    }
 }

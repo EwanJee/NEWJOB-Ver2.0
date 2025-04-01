@@ -35,7 +35,7 @@ class MemberServiceImpl(
                 phoneNumber = member.phoneNumber,
                 industry = member.industry,
             )
-        memberRepository.save(memberEntity) // 반환값 사용 X
+        memberRepository.save(memberEntity)
         return ResponseCreateMemberDto(
             id = memberEntity.id,
             name = member.name,

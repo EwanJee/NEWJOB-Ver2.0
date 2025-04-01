@@ -4,3 +4,17 @@ spring:
   profiles:
     include: secret
     active: dev
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health, info
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true

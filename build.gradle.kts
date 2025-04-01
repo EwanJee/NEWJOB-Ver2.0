@@ -20,6 +20,11 @@ repositories {
 }
 
 dependencies {
+    // actuator
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    // prometheus
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
     // dotenv
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.2")
 //    implementation("software.amazon.awssdk:s3:2.31.6")
@@ -49,7 +54,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.3")
+//    implementation("io.projectreactor.kotlin:reactor-kolin-extensions")
     // flyway
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")

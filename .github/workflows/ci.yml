@@ -32,3 +32,5 @@ jobs:
 
       - name: Build with Gradle (use dev profile)
         run: ./gradlew build -Dspring.profiles.active=dev
+        env:
+          SPRING_PROFILES_ACTIVE: dev

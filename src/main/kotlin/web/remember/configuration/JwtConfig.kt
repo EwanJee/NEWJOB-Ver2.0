@@ -7,8 +7,8 @@ import web.remember.util.JwtUtil
 
 @Configuration
 class JwtConfig {
-    @Value("\${jwt.secret}")
-    private var secretKey: String = ""
+    @Value("\${jwt.secret:default-value}")
+    var secretKey: String = ""
 
     @Bean
     fun jwtUtil(): JwtUtil = JwtUtil(secretKey)

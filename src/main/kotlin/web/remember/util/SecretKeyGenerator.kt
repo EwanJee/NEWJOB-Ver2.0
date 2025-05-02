@@ -3,12 +3,17 @@ package web.remember.util
 import java.security.SecureRandom
 import java.util.Base64
 
-fun main() {
-    val random: SecureRandom = SecureRandom()
-    val key = ByteArray(32) // 256-bit key
-    random.nextBytes(key)
-    val secretKey: String = Base64.getUrlEncoder().withoutPadding().encodeToString(key)
-    println("Secret key 생성 : $secretKey")
+class SecretKeyGenerator {
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            val random: SecureRandom = SecureRandom()
+            val key = ByteArray(32) // 256-bit key
+            random.nextBytes(key)
+            val secretKey: String = Base64.getUrlEncoder().withoutPadding().encodeToString(key)
+            println("Secret key 생성 : $secretKey")
+        }
+    }
 }
 
 /**

@@ -83,9 +83,12 @@ class JwtAuthenticationSuccessHandler(
                 )
             member.kakaoId = id
             member.emailL = email
-            memberRepository.save(member)
+            val saved = memberRepository.save(member)
         }
-
+        claims["memberId"] = member.id
+        claims["kakaoId"] = member.kakaoId
+        claims["industry"] = member.industry
+        claims["phoneNumber"] = member.phoneNumber
         // redis
         val redisKey = "kakao:token:$kakaoId"
         val value =

@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration
 import web.remember.util.JwtUtil
 
 @Configuration
-class JwtConfig {
-    @Value("\${jwt.secret:default-value}")
-    var secretKey: String = ""
-
+class JwtConfig(
+    @Value("\${jwt.secret}")
+    var secretKey: String = "",
+) {
     @Bean
     fun jwtUtil(): JwtUtil = JwtUtil(secretKey)
 }

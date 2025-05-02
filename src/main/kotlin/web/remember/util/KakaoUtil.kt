@@ -17,13 +17,13 @@ class KakaoUtil(
 ) {
     private val objectMapper = ObjectMapper()
 
-    @Value("\${spring.security.oauth2.client.registration.kakao.client-id:default-value}")
+    @Value("\${spring.security.oauth2.client.registration.kakao.client-id}")
     var clientId: String = ""
 
-    @Value("\${spring.security.oauth2.client.registration.kakao.redirect-uri:default-value}")
+    @Value("\${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     var redirectUri: String = ""
 
-    @Value("\${spring.security.oauth2.client.registration.kakao.client-secret:default-value}")
+    @Value("\${spring.security.oauth2.client.registration.kakao.client-secret}")
     var clientSecret: String = ""
 
     fun requestToken(accessCode: String): ResponseTokenDto {

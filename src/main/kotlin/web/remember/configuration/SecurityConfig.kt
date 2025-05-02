@@ -12,13 +12,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import web.remember.configuration.filter.JwtAuthenticationFilter
 import web.remember.configuration.filter.JwtAuthenticationSuccessHandler
 
-// import web.remember.domain.member.application.Oauth2MemberService
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig(
-//    private val oauth2MemberService: Oauth2MemberService,
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val successHandler: JwtAuthenticationSuccessHandler,
 ) {

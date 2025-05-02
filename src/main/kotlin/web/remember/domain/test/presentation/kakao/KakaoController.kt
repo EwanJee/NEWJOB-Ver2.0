@@ -1,26 +1,27 @@
 package web.remember.domain.test.presentation.kakao
 
 import org.springframework.http.ResponseEntity
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
+import web.remember.domain.member.application.MemberService
 
 @RestController
 @RequestMapping("/api/v1/kakao")
 class KakaoController(
     private val webClientBuilder: WebClient.Builder,
+    private val memberService: MemberService,
 ) {
     @PostMapping("/sendPdf")
     fun sendPdf(
-        @RegisteredOAuth2AuthorizedClient("kakao") authorizedClient: OAuth2AuthorizedClient,
+        @RequestParam("id") memberId: String,
         @RequestBody pdfUrl: String,
     ): ResponseEntity<String> {
-        val accessToken = authorizedClient.accessToken.tokenValue
         val webClient: WebClient = webClientBuilder.build()
+        val accessToken: String = memberService.findKakaoAccessToken(memberId)
         val json =
             """
 {

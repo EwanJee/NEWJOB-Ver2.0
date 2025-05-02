@@ -25,4 +25,6 @@ interface MemberService {
         code: String,
         response: HttpServletResponse,
     ): ResponseKakaoMemberDto
+
+    fun findKakaoAccessToken(memberId: String): String
 }

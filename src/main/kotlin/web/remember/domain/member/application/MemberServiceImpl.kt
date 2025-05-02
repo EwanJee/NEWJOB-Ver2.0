@@ -4,9 +4,11 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.cache.annotation.Caching
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import web.remember.domain.error.CustomException
 import web.remember.domain.member.dto.RequestAuthLoginDto
 import web.remember.domain.member.dto.RequestCreateMemberDto
 import web.remember.domain.member.dto.ResponseCreateMemberDto
@@ -25,6 +27,7 @@ class MemberServiceImpl(
     private val kakaoUtil: KakaoUtil,
     private val jwtUtil: JwtUtil,
     private val encoder: PasswordEncoder,
+    private val redisTemplate: RedisTemplate<String, String>,
 ) : MemberService {
     @Transactional
     override fun create(member: RequestAuthLoginDto): ResponseCreateMemberDto {
@@ -117,6 +120,14 @@ class MemberServiceImpl(
         val dto = ResponseKakaoMemberDto.of(memberEntity)
         dto.token = "Bearer <JWT_TOKEN>"
         return dto
+    }
+
+    override fun findKakaoAccessToken(memberId: String): String {
+        val redisKey = "kakao:token:$memberId"
+        val value = redisTemplate.opsForValue().get(redisKey) ?: throw CustomException("만료 시간이 지났습니다. 다시 로그인 해주세요.")
+        val kakaoAccessToken =
+            value.substringAfter("\"kakaoAccessToken\": \"").substringBefore("\"")
+        return kakaoAccessToken
     }
 
     private fun create(memberInfo: ResponseMemberInfoDto): Member {

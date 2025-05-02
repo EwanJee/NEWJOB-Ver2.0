@@ -3,18 +3,26 @@ package web.remember.configuration.filter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.core.Authentication
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.stereotype.Component
 import web.remember.domain.member.entity.Member
 import web.remember.domain.member.repository.MemberRepository
 import web.remember.util.JwtUtil
+import java.time.Duration
+import java.time.ZonedDateTime
 
 @Component
 class JwtAuthenticationSuccessHandler(
     private val jwtUtil: JwtUtil,
     private val memberRepository: MemberRepository,
+    private val authorizedClientService: OAuth2AuthorizedClientService,
+    private val redisTemplate: RedisTemplate<String, String>,
 ) : AuthenticationSuccessHandler {
     override fun onAuthenticationSuccess(
         request: HttpServletRequest?,
@@ -40,6 +48,17 @@ class JwtAuthenticationSuccessHandler(
         authentication: Authentication,
     ) {
         val user = authentication.principal as OAuth2User
+        val oauthToken = authentication as OAuth2AuthenticationToken
+
+        val authorizedClient: OAuth2AuthorizedClient? =
+            authorizedClientService.loadAuthorizedClient(
+                oauthToken.authorizedClientRegistrationId,
+                oauthToken.name,
+            )
+
+        val kakaoAccessToken = authorizedClient?.accessToken?.tokenValue
+        val kakaoTokenExpiresAt = authorizedClient?.accessToken?.expiresAt
+        val kakaoRefreshToken = authorizedClient?.refreshToken?.tokenValue
         val attributes = user.attributes
         val kakaoAccount = attributes["kakao_account"] as? Map<*, *>
         val profile = kakaoAccount?.get("profile") as? Map<*, *>
@@ -66,6 +85,19 @@ class JwtAuthenticationSuccessHandler(
             member.emailL = email
             memberRepository.save(member)
         }
+
+        // redis
+        val redisKey = "kakao:token:$kakaoId"
+        val value =
+            """
+            {
+                "kakaoAccessToken": "$kakaoAccessToken",
+                "kakaoTokenExpiresAt": "$kakaoTokenExpiresAt",
+                "kakaoRefreshToken": "$kakaoRefreshToken"
+            }
+            """.trimIndent()
+        val ttl = Duration.between(ZonedDateTime.now(), kakaoTokenExpiresAt ?: ZonedDateTime.now().plusHours(1))
+        redisTemplate.opsForValue().set(redisKey, value, ttl)
 
         val jwt = jwtUtil.generateToken(kakaoId.toString(), claims)
         response.sendRedirect("/oauth2?token=$jwt")

@@ -10,18 +10,24 @@ import java.util.UUID
 @Entity
 class Member(
     name: String,
-    phoneNumber: String,
-    industry: String,
+    phoneNumber: String = "",
+    industry: String = "",
 ) {
     @Id
     @Column(name = "id")
     val id: String = UUID.randomUUID().toString()
+
+    @Column(name = "kakao_id")
+    var kakaoId: Long = 0L
 
     @Column(name = "name")
     var name: String = name
 
     @Column(name = "phone_number")
     var phoneNumber: String = convert(phoneNumber)
+
+    @Column(name = "email")
+    var emailL: String = ""
 
     @Column(name = "industry")
     var industry: String = industry

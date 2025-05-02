@@ -20,8 +20,21 @@ repositories {
 }
 
 dependencies {
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    // hashing key
+    implementation("commons-codec:commons-codec:1.16.0")
+    // AWS S3
+    implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
     // actuator
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    // oauth2
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+    // spring security
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    testImplementation("org.springframework.security:spring-security-test")
     // prometheus
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 

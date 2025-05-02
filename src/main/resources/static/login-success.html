@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인 성공</title>
+</head>
+<body>
+<h1>로그인 성공 🎉</h1>
+<pre id="user-info">사용자 정보를 불러오는 중...</pre>
+
+<script>
+    const token = localStorage.getItem("jwt");
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+
+
+    if (!token) {
+        document.getElementById("user-info").textContent = "토큰이 없습니다. 로그인 먼저 해주세요.";
+    } else {
+        fetch(`/api/v1/members?code=${code}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("사용자 정보 요청 실패");
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("user-info").textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById("user-info").textContent = "오류: " + error.message;
+            });
+    }
+</script>
+</body>
+</html>

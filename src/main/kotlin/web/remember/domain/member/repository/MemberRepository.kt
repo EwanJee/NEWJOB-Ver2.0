@@ -17,4 +17,8 @@ interface MemberRepository :
         phoneNumber: String,
         name: String,
     ): Boolean
+
+    fun findByEmailL(email: String): Member?
+
+    fun findByKakaoId(kakaoId: Long): Member?
 }

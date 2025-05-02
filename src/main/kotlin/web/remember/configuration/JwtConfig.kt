@@ -7,7 +7,7 @@ import web.remember.util.JwtUtil
 
 @Configuration
 class JwtConfig {
-    @Value("\${jwt.secret}")
+    @Value("\${JWT_SECRET}")
     private lateinit var secretKey: String
 
     @Bean

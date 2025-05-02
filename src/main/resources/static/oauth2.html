@@ -14,31 +14,13 @@
     const token = params.get("token");
     const code = params.get("code");
 
-    console.log("token", token);
-    console.log("code", code);
-    // 현재 url
-    console.log("current url", window.location.href);
-
     if (!token) {
         alert("토큰이 없습니다. 로그인에 실패했습니다.");
-        // window.location.href = "/";
+        window.location.href = "/";
     } else {
         // 2. 토큰 저장 (여기선 localStorage 사용)
-        // localStorage.setItem("jwt", token);
-        fetch(`/api/v1/members?code=${code}`)
-            .then(response => response.json())
-            .then(data => {
-                const jwt = data.token.replace("Bearer ", "");
-                localStorage.setItem("jwt", jwt);
-                window.location.href = "/login-success";
-            })
-            .catch(error => {
-                console.error("로그인 실패", error);
-            });
-
-
-        // 3. 로그인 완료 페이지로 이동
-        // window.location.href = "/login-success.html";
+        localStorage.setItem("jwt", token);
+        window.location.href = "/login-success";
     }
 </script>
 </body>

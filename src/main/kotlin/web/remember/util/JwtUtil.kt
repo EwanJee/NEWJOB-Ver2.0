@@ -4,16 +4,12 @@ package web.remember.util
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
 import java.security.Key
 import java.util.*
 import javax.crypto.spec.SecretKeySpec
 
-@Component
 class JwtUtil(
-    @Value("\${jwt.secret}")
-    private var secretKey: String,
+    private val secretKey: String,
 ) {
     companion object {
         private const val EXPIRATION_TIME = 60 * 60 * 1000 * 4 // 4시간

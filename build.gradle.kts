@@ -20,6 +20,8 @@ repositories {
 }
 
 dependencies {
+    // XML 데이터를 자바 객체로 매핑하는 데 사용
+    implementation("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
@@ -40,7 +42,7 @@ dependencies {
 
     // dotenv
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.2")
-//    implementation("software.amazon.awssdk:s3:2.31.6")
+    implementation("software.amazon.awssdk:s3:2.31.6")
     implementation("io.awspring.cloud:spring-cloud-aws-starter:3.1.1")
     // 카카오톡 알림톡 API
     implementation("net.nurigo:sdk:4.3.2")

@@ -1,6 +1,7 @@
 package web.remember.configuration.filter
 
 import jakarta.servlet.FilterChain
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.data.redis.core.RedisTemplate
@@ -15,7 +16,10 @@ import web.remember.domain.member.entity.Member
 import web.remember.domain.member.repository.MemberRepository
 import web.remember.util.JwtUtil
 import java.time.Duration
+import java.time.Instant
+import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 @Component
 class JwtAuthenticationSuccessHandler(
@@ -99,10 +103,21 @@ class JwtAuthenticationSuccessHandler(
                 "kakaoRefreshToken": "$kakaoRefreshToken"
             }
             """.trimIndent()
-        val ttl = Duration.between(ZonedDateTime.now(), kakaoTokenExpiresAt ?: ZonedDateTime.now().plusHours(1))
-        redisTemplate.opsForValue().set(redisKey, value, ttl)
+        val zoneId = ZoneId.systemDefault() // 또는 ZoneId.of("Asia/Seoul") 등 명시적으로 지정
+        val expiresAt = (kakaoTokenExpiresAt ?: Instant.now().plus(4, ChronoUnit.HOURS)).atZone(zoneId)
+        val ttl = Duration.between(ZonedDateTime.now(zoneId), expiresAt)
 
+        redisTemplate.opsForValue().set(redisKey, value, ttl)
         val jwt = jwtUtil.generateToken(kakaoId.toString(), claims)
-        response.sendRedirect("/oauth2?token=$jwt")
+        val jwtCookie =
+            Cookie("jwt", jwt).apply {
+                path = "/" // 모든 경로에서 쿠키 사용
+                maxAge = 60 * 60 * 4 // 4시간
+                isHttpOnly = true // 자바스크립트 접근 방지 → XSS 보안
+                secure = false // HTTPS 환경에서만 전송
+            }
+        // 응답에 쿠키 추가
+        response.addCookie(jwtCookie)
+        response.sendRedirect("/login-success")
     }
 }

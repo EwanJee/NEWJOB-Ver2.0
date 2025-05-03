@@ -117,7 +117,7 @@
 
 <script>
   $(document).ready(function (message) {
-    $(".bg-color").fadeIn(1000);
+    $(".bg-color").fadeIn(10);
 
     $("#startButton").on("click", async function () {
       try {
@@ -148,8 +148,8 @@
         const testId = await testStartResponse.text();
         // sessionStorage.setItem("testId", testId);
 
-        $(".bg").fadeOut(500, function () {
-          $("#quiz-page").fadeIn(500);
+        $(".bg").fadeOut(5, function () {
+          $("#quiz-page").fadeIn(5);
           startQuiz(questionMap);
         });
 

@@ -30,8 +30,40 @@
 <body>
 <div class="result-container">
     <h2>나의 경력진단 결과</h2>
-    <!-- 서버에서 세션에 저장된 pdf를 제공하는 API로 직접 연결 -->
-    <iframe id="pdf-frame" src="/api/v1/pdf/career"></iframe>
+    <iframe id="pdf-frame"></iframe>
 </div>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const url = params.get("pdfUrl");
+    const pdfFrame = document.getElementById("pdf-frame");
+
+    // 함수 정의 (즉시 실행)
+    (async () => {
+        // 간단한 유효성 검사
+        if (url && url.startsWith("https://")) {
+            console.log("PDF URL:", url);
+            pdfFrame.src = url;
+
+            // sendPdf API 호출
+            try {
+                const res = await fetch("/api/v1/kakao/sendPdf", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ pdfUrl: url })
+                });
+
+                const result = await res.text();
+                console.log("전송 완료:", result);
+            } catch (err) {
+                console.error(err);
+                alert("PDF 전송에 실패했습니다.");
+            }
+        } else {
+            alert("PDF URL이 없거나 잘못되었습니다.");
+        }
+    })(); // 즉시 실행
+</script>
 </body>
 </html>

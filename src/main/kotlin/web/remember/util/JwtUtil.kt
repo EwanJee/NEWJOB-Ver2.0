@@ -4,6 +4,7 @@ package web.remember.util
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import web.remember.domain.error.CustomException
 import java.security.Key
 import java.util.*
 import javax.crypto.spec.SecretKeySpec
@@ -40,4 +41,22 @@ class JwtUtil(
             .setExpiration(Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 1시간
             .signWith(SecretKeySpec(secretKey.toByteArray(), SignatureAlgorithm.HS256.jcaName))
             .compact()
+
+    fun parseClaims(jwt: String): MutableMap<String, Any> {
+        val signingKey: Key = SecretKeySpec(secretKey.toByteArray(), SignatureAlgorithm.HS256.jcaName)
+        val claims =
+            Jwts
+                .parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(jwt)
+                .body
+        if (claims.expiration.before(Date())) {
+            throw CustomException("토큰이 만료되었습니다.")
+        }
+        if (claims.size == 0) {
+            throw CustomException("토큰이 유효하지 않습니다.")
+        }
+        return claims
+    }
 }

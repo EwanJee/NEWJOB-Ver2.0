@@ -36,34 +36,7 @@
     const params = new URLSearchParams(window.location.search);
     const url = params.get("pdfUrl");
     const pdfFrame = document.getElementById("pdf-frame");
-
-    // 함수 정의 (즉시 실행)
-    (async () => {
-        // 간단한 유효성 검사
-        if (url && url.startsWith("https://")) {
-            console.log("PDF URL:", url);
-            pdfFrame.src = url;
-
-            // sendPdf API 호출
-            try {
-                const res = await fetch("/api/v1/kakao/sendPdf", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ pdfUrl: url })
-                });
-
-                const result = await res.text();
-                console.log("전송 완료:", result);
-            } catch (err) {
-                console.error(err);
-                alert("PDF 전송에 실패했습니다.");
-            }
-        } else {
-            alert("PDF URL이 없거나 잘못되었습니다.");
-        }
-    })(); // 즉시 실행
+    pdfFrame.src = url;
 </script>
 </body>
 </html>

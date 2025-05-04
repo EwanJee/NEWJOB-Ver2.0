@@ -255,8 +255,21 @@
                     });
                     const pdfUrl = await response.text();
 
-                    window.location.href = `/career/result?pdfUrl=${pdfUrl}`;
+                    try {
+                        const res = await fetch("/api/v1/kakao/sendPdf", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: pdfUrl
+                        });
 
+                        // const result = await res.text();
+                        window.location.href = `/career/result?pdfUrl=${pdfUrl}`;
+                    } catch (err) {
+                        console.error(err);
+                        alert("PDF 전송에 실패했습니다.");
+                    }
                 } catch (err) {
                     console.error("PDF 처리 중 오류:", err);
                     alert("결과 PDF를 불러오는 데 실패했습니다.");

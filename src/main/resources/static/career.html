@@ -247,19 +247,11 @@
 
             async function fetchAndSendStaticPdf() {
                 try {
-                    // 1. static pdf를 blob으로 fetch
-                    const pdfResponse = await fetch('/report.pdf'); // static 경로이므로 앞에 /만 붙이면 됨
-                    const pdfBlob = await pdfResponse.blob();
-                    const pdfFile = new File([pdfBlob], "report.pdf", {type: "application/pdf"});
-
-                    // 2. FormData 생성
-                    const formData = new FormData();
-                    formData.append("file", pdfFile); // 서버의 @RequestPart("file")
 
                     // 3. 서버에 전송
                     const response = await fetch("/api/v1/pdf/career/create", {
-                        method: "POST",
-                        body: formData
+                        method: "POST"
+                        // body: formData
                     });
                     const pdfUrl = await response.text();
 

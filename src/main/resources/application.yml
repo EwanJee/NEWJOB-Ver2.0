@@ -1,6 +1,9 @@
 jwt:
   secret: ${JWT_SECRET}
 
+gpt:
+  key: ${GPT_KEY}
+
 spring:
   config:
     import: optional:file:.env[.properties]

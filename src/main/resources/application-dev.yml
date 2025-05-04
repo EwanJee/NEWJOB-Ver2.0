@@ -1,9 +1,9 @@
-#logging:
-#  level:
-#    org.springframework.security: DEBUG
-#    io.netty: DEBUG
-#    org.springframework.web.reactive.function.client: DEBUG
-#    web: debug
+logging:
+  level:
+    org.springframework.security: DEBUG
+    io.netty: DEBUG
+    org.springframework.web.reactive.function.client: DEBUG
+    web: debug
 spring:
   config:
     import: optional:file:.env[.properties]

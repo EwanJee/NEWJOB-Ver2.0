@@ -17,7 +17,6 @@ jobs:
         run: |
           echo "${SSH_PRIVATE_KEY}" > /tmp/ssh_key
           chmod 600 /tmp/ssh_key
-
       - name: Deploy and Build on EC2
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
@@ -30,21 +29,17 @@ jobs:
             # Git pull to fetch the latest code
             cd ~/remember/NEWJOB-Ver2.0
             git pull origin main
-
             # Clean and build project
             ./gradlew clean
             ./gradlew clean build
-
             # Stop existing containers and deploy new ones
             docker-compose -f compose.prod.yaml down --remove-orphans --timeout 30 || {
               echo "docker-compose down failed, forcing stop of all containers";
               docker stop $(docker ps -aq) || true
               docker rm $(docker ps -aq) || true
             }
-
             ./automation.sh  # 이미지 빌드
             docker-compose -f compose.prod.yaml up -d  # Docker Compose로 새로운 컨테이너 실행
 #            docker-compose -f compose.prod.monitoring.yaml up -d  # Docker Compose로 새로운 컨테이너 실행
 #            ./setmonitor.sh
-          
           EOF

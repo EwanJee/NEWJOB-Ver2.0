@@ -1,6 +1,5 @@
 package web.remember.domain.test.presentation.kakao
 
-import net.minidev.json.JSONObject
 import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.bind.annotation.CookieValue
@@ -21,32 +20,42 @@ class KakaoController(
     private val memberService: MemberService,
     private val jwtUtil: JwtUtil,
 ) {
+    @Suppress("ktlint:standard:max-line-length")
     @PostMapping("/sendPdf")
     fun sendPdf(
         @CookieValue("jwt") jwt: String,
         @RequestBody pdfUrl: String,
     ): ResponseEntity<String> {
-//        if (!pdfUrl.startsWith("https")) {
-//            throw CustomException("PDF URL이 유효하지 않습니다.")
-//        }
+        if (!pdfUrl.startsWith("https")) {
+            throw CustomException("PDF URL이 유효하지 않습니다.")
+        }
+
+        // 메서드 두번 호출 방지
         val claims = jwtUtil.parseClaims(jwt)
         val memberId: String =
             claims["kakaoId"]?.toString()
                 ?: throw CustomException("세션 정보가 없습니다. 로그인 후, 다시 실행해주세요")
         val webClient: WebClient = webClientBuilder.build()
         val accessToken: String = memberService.findKakaoAccessToken(memberId)
-
-        val linkObj = JSONObject()
-        linkObj["web_url"] = pdfUrl
-        linkObj["mobile_web_url"] = pdfUrl
-        val jsonObject = JSONObject()
-        jsonObject["object_type"] = "text"
-        jsonObject["text"] = "PDF 파일이 생성되었습니다. 아래 버튼을 눌러 확인하세요."
-        jsonObject["link"] = linkObj
-        jsonObject["button_title"] = "바로 확인"
+        val imageUrl = "https://picsum.photos/640/640"
+        val templateObject =
+            """
+            {
+              "object_type": "feed",
+              "content": {
+                "title": "PDF 파일 안내",
+                "description": "검사 결과가 PDF로 생성되었습니다.",
+                "image_url": "$imageUrl",
+                "link": {
+                  "web_url": "https://remembercareer.com/career/result?pdfUrl=$pdfUrl",
+                  "mobile_web_url": "https://remembercareer.com/career/result?pdfUrl=$pdfUrl"
+                }
+              }
+            }
+            """.trimIndent()
 
         val multiValueMap = LinkedMultiValueMap<String, String>()
-        multiValueMap.add("template_object", jsonObject.toString())
+        multiValueMap.add("template_object", templateObject)
 
         val response =
             webClient

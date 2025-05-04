@@ -2,7 +2,7 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ "mainz" ]  # main 브랜치에 푸시될 때 실행
+    branches: [ "main" ]  # main 브랜치에 푸시될 때 실행
 
 jobs:
   deploy:
@@ -44,7 +44,7 @@ jobs:
 
             ./automation.sh  # 이미지 빌드
             docker-compose -f compose.prod.yaml up -d  # Docker Compose로 새로운 컨테이너 실행
-            docker-compose -f compose.prod.monitoring.yaml up -d  # Docker Compose로 새로운 컨테이너 실행
-            ./setmonitor.sh
+#            docker-compose -f compose.prod.monitoring.yaml up -d  # Docker Compose로 새로운 컨테이너 실행
+#            ./setmonitor.sh
           
           EOF

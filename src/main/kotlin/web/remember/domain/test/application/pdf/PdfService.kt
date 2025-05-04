@@ -7,7 +7,7 @@ interface PdfService {
         name: String,
         industry: String,
         data: MutableMap<String, String>,
-        pdf: MultipartFile,
+        response: String,
     ): ByteArray
 
     fun test(pdf: MultipartFile): ByteArray

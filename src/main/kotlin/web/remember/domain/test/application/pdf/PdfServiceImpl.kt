@@ -15,6 +15,7 @@ import web.remember.domain.question.entity.QuestionANM
 import web.remember.domain.question.entity.QuestionCtype
 import web.remember.domain.question.entity.QuestionGroup
 import java.io.ByteArrayInputStream
+import java.io.IOException
 
 @Service
 class PdfServiceImpl : PdfService {
@@ -22,7 +23,7 @@ class PdfServiceImpl : PdfService {
         name: String,
         industry: String,
         data: MutableMap<String, String>,
-        pdf: MultipartFile,
+        response: String,
     ): ByteArray {
         var inputStream: ByteArrayInputStream? = null
         var reader: PdfReader? = null
@@ -31,7 +32,14 @@ class PdfServiceImpl : PdfService {
         var pdfDoc: PdfDocument? = null
 
         try {
-            inputStream = ByteArrayInputStream(pdf.bytes)
+            val inputStream: ByteArrayInputStream =
+                try {
+                    val pdf = ClassPathResource("static/report.pdf").inputStream.readAllBytes()
+                    ByteArrayInputStream(pdf)
+                } catch (e: IOException) {
+                    // 예외 처리 로직
+                    throw CustomException("PDF 파일을 찾을 수 없습니다.$e")
+                }
             reader = PdfReader(inputStream)
             outputStream = ByteArrayOutputStream()
             writer = PdfWriter(outputStream)
@@ -52,7 +60,7 @@ class PdfServiceImpl : PdfService {
                     val field = form.getField(fieldName)
                     field.setFont(koreanFont)
                 } catch (e: Exception) {
-                    println("필드 $fieldName 폰트 설정 중 오류: ${e.message}")
+                    throw CustomException("PDF 설정 중 오류가 발생했습니다.")
                 }
             }
 
@@ -173,12 +181,14 @@ class PdfServiceImpl : PdfService {
                 }
             }
 
+            form.getField("response").setValue(response)
+
             // 모든 변경사항이 적용되었는지 확인
             form.flattenFields()
 
             // 문서 닫기
             pdfDoc.close()
-
+            println(outputStream.toByteArray())
             return outputStream.toByteArray()
         } catch (e: Exception) {
             throw CustomException("PDF 변환 중 오류가 발생했습니다.")

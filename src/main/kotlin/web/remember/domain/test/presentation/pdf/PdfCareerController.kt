@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import web.remember.domain.error.CustomException
+import web.remember.domain.gpt.GptService
 import web.remember.domain.member.application.MemberService
+import web.remember.domain.test.application.TestService
 import web.remember.domain.test.application.career.CareerTestService
 import web.remember.domain.test.application.pdf.PdfService
 import web.remember.domain.test.application.s3.S3Service
@@ -23,11 +25,12 @@ class PdfCareerController(
     private val careerTestService: CareerTestService,
     private val s3Service: S3Service,
     private val jwtUtil: JwtUtil,
+    private val testService: TestService,
+    private val gptService: GptService,
 ) {
-    @PostMapping("/create", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun createPdf(
+    @PostMapping("/create")
+    suspend fun createPdf(
         @CookieValue("jwt") jwt: String?,
-        @RequestPart("file") file: MultipartFile,
         httpSession: HttpSession,
     ): ResponseEntity<String> {
         if (jwt == null) {
@@ -43,9 +46,12 @@ class PdfCareerController(
 
         val dto = memberService.findNameAndIndustryById(memberId)
         val data = careerTestService.findDataById(testId)
-        val pdf: ByteArray = pdfService.makeCareerPdf(dto.name, dto.industry, data, file)
+        println(data)
+        val response = gptService.getGptResponse(data.toString())
+        val pdf: ByteArray = pdfService.makeCareerPdf(dto.name, dto.industry, data, response)
         val fileName = "CareerTest_${memberId}_$testId.pdf"
         val pdfUrl = s3Service.uploadFile(pdf, fileName) // S3에 업로드
+        testService.updateUrl(testId, pdfUrl) // DB에 URL 저장
         return ResponseEntity.ok().body(pdfUrl)
     }
 

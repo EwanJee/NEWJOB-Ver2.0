@@ -7,7 +7,7 @@ import jakarta.persistence.*
 import org.hibernate.annotations.DynamicUpdate
 import web.remember.domain.question.entity.TestType
 
-@DynamicUpdate
+@DynamicUpdate // 변경된 필드만 업데이트
 @Table(name = "test")
 @Entity
 class Test(
@@ -32,4 +32,7 @@ class Test(
     @Column(name = "data", columnDefinition = "jsonb")
     @org.hibernate.annotations.Type(JsonType::class)
     var data: MutableMap<String, String>? = data
+
+    @Column(name = "url")
+    var url: String = ""
 }

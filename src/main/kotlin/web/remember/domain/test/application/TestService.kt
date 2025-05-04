@@ -1,3 +1,8 @@
 package web.remember.domain.test.application
 
-interface TestService
+interface TestService {
+    fun updateUrl(
+        testId: String,
+        url: String,
+    ): String
+}

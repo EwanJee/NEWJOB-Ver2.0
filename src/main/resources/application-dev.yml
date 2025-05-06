@@ -23,9 +23,6 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: true
   security:
     oauth2:
@@ -38,14 +35,15 @@ spring:
             user-name-attribute: id
         registration:
           kakao:
-            client-id: ${CLIENT_ID}
-            client-secret: ${CLIENT_SECRET}
+            client-id: ${CLIENT_DEV_ID}
+            client-secret: ${CLIENT_DEV_SECRET}
             redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             client-name: Kakao
             scope:
               - profile_nickname
+              - profile_image
               - account_email
               - talk_message
 

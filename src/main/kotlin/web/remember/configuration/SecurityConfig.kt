@@ -30,8 +30,10 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/api/v1/members/**")
+                    .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico")
                     .permitAll()
+                    .requestMatchers("/api/v1/**")
+                    .authenticated()
                     .anyRequest()
                     .permitAll()
             }.oauth2Login {

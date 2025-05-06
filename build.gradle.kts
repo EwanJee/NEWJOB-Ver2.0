@@ -20,6 +20,8 @@ repositories {
 }
 
 dependencies {
+    // LOG를 AWS CloudWatch에 전송하는 라이브러리
+    implementation("ca.pjer:logback-awslogs-appender:1.6.0")
     // XML 데이터를 자바 객체로 매핑하는 데 사용
     implementation("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
     // JWT
@@ -80,7 +82,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache:3.3.9")
     implementation("org.springframework.boot:spring-boot-starter-hateoas")
     implementation("org.springframework.boot:spring-boot-starter-mail")
-    implementation("org.springframework.session:spring-session-data-redis:3.3.6")
+//    implementation("org.springframework.session:spring-session-data-redis:3.3.6")
 //    developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     runtimeOnly("org.postgresql:postgresql")

@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
@@ -25,8 +25,15 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
         filterChain: FilterChain,
     ) {
         val authHeader = request.getHeader("Authorization")
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            val token = authHeader.substring(7)
+        val jwtFromCookie = request.cookies?.firstOrNull { it.name == "jwt" }?.value
+
+        val token =
+            when {
+                authHeader != null && authHeader.startsWith("Bearer ") -> authHeader.substring(7)
+                jwtFromCookie != null -> jwtFromCookie
+                else -> null
+            }
+        if (token != null) {
             try {
                 val claims =
                     Jwts
@@ -37,9 +44,10 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
                         .body
 
                 val username = claims.subject
+                val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
                 val user =
                     org.springframework.security.core.userdetails
-                        .User(username, "", emptyList())
+                        .User(username, "", authorities)
                 val auth = UsernamePasswordAuthenticationToken(user, null, user.authorities)
 
                 SecurityContextHolder.getContext().authentication = auth

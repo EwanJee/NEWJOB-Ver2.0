@@ -23,8 +23,8 @@ class JwtUtil(
         val signingKey: Key = SecretKeySpec(secretKey.toByteArray(), SignatureAlgorithm.HS256.jcaName)
         return Jwts
             .builder()
-            .setSubject(subject)
             .setClaims(claims)
+            .setSubject(subject)
             .setExpiration(Date(System.currentTimeMillis() + EXPIRATION_TIME))
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact()

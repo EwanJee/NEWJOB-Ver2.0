@@ -181,7 +181,9 @@ class PdfServiceImpl : PdfService {
                 }
             }
 
-            form.getField("response").setValue(response)
+            val field = form.getField("response")
+            field.setFontSize(10f)
+            field.setValue(response)
 
             // 모든 변경사항이 적용되었는지 확인
             form.flattenFields()

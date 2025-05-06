@@ -6,7 +6,6 @@ import com.nasa.todaynasa.application.service.apod.request.gpt.RequestAnswerGpt
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.awaitBody
 import web.remember.domain.error.CustomException
 
 @Service
@@ -15,7 +14,7 @@ class GptServiceImpl(
     private val gptClient: WebClient,
     private val objectMapper: ObjectMapper,
 ) : GptService {
-    override suspend fun getGptResponse(requestBody: String): String {
+    override fun getGptResponse(requestBody: String): String {
         val requestGpt =
             RequestGpt(
                 model = "gpt-4.1",
@@ -30,12 +29,15 @@ class GptServiceImpl(
                 .post()
                 .bodyValue(requestGpt)
                 .retrieve()
-                .awaitBody<RequestAnswerGpt>()
+//                .awaitBody<RequestAnswerGpt>()
+                .bodyToMono(RequestAnswerGpt::class.java)
+                .block() // 블로킹 방식으로 응답을 기다림
         val content =
             response
-                .choices[0]
-                .message
-                .content ?: throw CustomException("GPT 응답을 받을 수 없습니다.")
+                ?.choices
+                ?.get(0)
+                ?.message
+                ?.content ?: throw CustomException("GPT 응답을 받을 수 없습니다.")
         return content
     }
 }

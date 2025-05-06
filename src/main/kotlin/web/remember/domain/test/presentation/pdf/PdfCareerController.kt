@@ -29,7 +29,7 @@ class PdfCareerController(
     private val gptService: GptService,
 ) {
     @PostMapping("/create")
-    suspend fun createPdf(
+    fun createPdf(
         @CookieValue("jwt") jwt: String?,
         httpSession: HttpSession,
     ): ResponseEntity<String> {
@@ -46,7 +46,6 @@ class PdfCareerController(
 
         val dto = memberService.findNameAndIndustryById(memberId)
         val data = careerTestService.findDataById(testId)
-        println(data)
         val response = gptService.getGptResponse(data.toString())
         val pdf: ByteArray = pdfService.makeCareerPdf(dto.name, dto.industry, data, response)
         val fileName = "CareerTest_${memberId}_$testId.pdf"

@@ -71,10 +71,12 @@ class JwtAuthenticationSuccessHandler(
 
         val email = kakaoAccount?.get("email") as? String ?: ""
         val nickname = profile?.get("nickname") as? String ?: ""
+        val profileImageUrl = profile?.get("profile_image_url") as? String ?: ""
 
         val claims: MutableMap<String, Any> = mutableMapOf()
         claims["email"] = email
         claims["name"] = nickname
+        claims["image"] = profileImageUrl
 
         var member = memberRepository.findByKakaoId(id)
 
@@ -103,7 +105,7 @@ class JwtAuthenticationSuccessHandler(
                 "kakaoRefreshToken": "$kakaoRefreshToken"
             }
             """.trimIndent()
-        val zoneId = ZoneId.systemDefault() // 또는 ZoneId.of("Asia/Seoul") 등 명시적으로 지정
+        val zoneId = ZoneId.systemDefault()
         val expiresAt = (kakaoTokenExpiresAt ?: Instant.now().plus(4, ChronoUnit.HOURS)).atZone(zoneId)
         val ttl = Duration.between(ZonedDateTime.now(zoneId), expiresAt)
 

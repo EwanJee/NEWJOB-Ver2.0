@@ -13,12 +13,10 @@ import org.springframework.data.redis.connection.lettuce.LettuceClientConfigurat
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.StringRedisSerializer
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession
 import java.time.Duration
 
 @Configuration
 @EnableCaching
-@EnableRedisHttpSession
 class RedisConfig {
     @Value("\${spring.data.redis.host}")
     lateinit var host: String

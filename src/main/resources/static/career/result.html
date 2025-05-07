@@ -31,6 +31,14 @@
 <div class="result-container">
     <h2>나의 경력진단 결과</h2>
     <iframe id="pdf-frame"></iframe>
+        <button id="payment-button" style="display:none;">결제하기</button>
+        <script>
+            const paymentButton = document.getElementById("payment-button");
+            paymentButton.style.display = "block";
+            paymentButton.addEventListener("click", function() {
+                window.location.href = "/career/result/payment";
+            });
+        </script>
 </div>
 <script>
     const params = new URLSearchParams(window.location.search);

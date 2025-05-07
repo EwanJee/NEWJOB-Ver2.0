@@ -128,7 +128,10 @@
         const token = getCookie("jwt");
         $("#startButton").on("click", async function () {
             try {
-                const questionResponse = await fetch("/api/v1/questions/career", {method: "POST"});
+                const questionResponse = await fetch("/api/v1/questions/career", {
+                    method: "POST",
+                    credentials: "include",// JWT 쿠키 포함
+                });
 
                 if (!questionResponse.ok) {
                     const errorData = await questionResponse.json();
@@ -141,7 +144,8 @@
 
                 const testStartResponse = await fetch("/api/v1/career-test", {
                     method: "POST",
-                    headers: {"Content-Type": "application/json"},
+                    credentials: "include",
+                    headers: {"Content-Type": "application/json",},
                     body: JSON.stringify({questionMap})
                 });
 
@@ -238,6 +242,7 @@
                 // 1. 점수 저장
                 fetch("/api/v1/career-test/score", {
                     method: "PUT",
+                    credentials: "include",// JWT 쿠키 포함
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -250,6 +255,7 @@
 
                         // 2. 검사 종료 처리
                         return fetch("/api/v1/career-test/finish", {
+                            credentials: "include",// JWT 쿠키 포함
                             method: "PUT"
                         });
                     })
@@ -269,6 +275,7 @@
 
                     // 3. 서버에 전송
                     const response = await fetch("/api/v1/pdf/career/create", {
+                        credentials: "include",// JWT 쿠키 포함
                         method: "POST"
                         // body: formData
                     });
@@ -277,6 +284,7 @@
                     try {
                         const res = await fetch("/api/v1/kakao/sendPdf", {
                             method: "POST",
+                            credentials: "include",// JWT 쿠키 포함
                             headers: {
                                 "Content-Type": "application/json"
                             },

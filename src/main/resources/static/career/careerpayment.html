@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>결제</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <!--    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>-->
+    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+</head>
+<body>
+<h1>결제 테스트</h1>
+<button onclick="requestPay()">결제하기</button>
+
+<script>
+    async function requestPay() {
+        try {
+            const res = await fetch("/api/v1/payment/career", {
+                method: "GET",
+                credentials: "include" // JWT 쿠키 포함
+            });
+            const data = await res.json();
+            if (res.status !== 200) {
+                alert(data.message);
+                return;
+            }
+            const response = await PortOne.requestPayment({
+                // Store ID 설정
+                storeId: data.storeId,
+                // 채널 키 설정
+                channelKey: data.channelKey,
+                paymentId: data.paymentId,
+                orderName: data.orderName,
+                totalAmount: data.totalAmount,
+                currency: data.currency,
+                payMethod: data.payMethod,
+            });
+            if (response.code !== undefined) {
+                // 오류 발생
+                return alert(response.message);
+            }
+            const notified = await fetch(`/api/v1/payment/career/complete`, {
+                method: "POST",
+                credentials: "include",// JWT 쿠키 포함
+                headers: {"Content-Type": "application/json"},
+                // paymentId와 주문 정보를 서버에 전달합니다
+                body: JSON.stringify({
+                    paymentId: response.paymentId,
+                }),
+            });
+            const notifiedData = await notified.json();
+            if (notified.status !== 200) {
+                alert(notifiedData.message);
+                return;
+            }
+            // 결제 완료 후 처리
+            alert("결제가 완료되었습니다.");
+        } catch (e) {
+
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -30,8 +30,15 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico")
-                    .permitAll()
+                    .requestMatchers(
+                        "/assets/**",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/favicon.ico",
+                        "/image/**",
+                        "/text/**",
+                    ).permitAll()
                     .requestMatchers("/api/v1/**")
                     .authenticated()
                     .anyRequest()

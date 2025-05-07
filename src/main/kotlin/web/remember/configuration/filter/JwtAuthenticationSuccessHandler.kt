@@ -1,10 +1,10 @@
 package web.remember.configuration.filter
 
 import jakarta.servlet.FilterChain
-import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.http.ResponseCookie
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
@@ -114,15 +114,17 @@ class JwtAuthenticationSuccessHandler(
         redisTemplate.opsForValue().set(redisKey, value, ttl)
         val jwt = jwtUtil.generateToken(kakaoId.toString(), claims)
         val jwtCookie =
-            Cookie("jwt", jwt).apply {
-                path = "/" // 모든 경로에서 쿠키 사용
-                maxAge = 60 * 60 * 4 // 4시간
-                isHttpOnly = true // 자바스크립트 접근 방지 → XSS 보안
-                secure = false // HTTPS 환경에서만 전송
-                setAttribute("SameSite", "Lax")
-            }
+            ResponseCookie
+                .from("jwt", jwt)
+                .path("/")
+                .httpOnly(true)
+                .maxAge(Duration.ofHours(4))
+                .sameSite("Lax") // 또는 SameSite=None, HTTPS일 땐 secure도 true
+                .secure(false) // HTTPS 환경이라면 true
+                .build()
         // 응답에 쿠키 추가
-        response.addCookie(jwtCookie)
+//        response.addCookie(jwtCookie)
+        response.addHeader("Set-Cookie", jwtCookie.toString())
         response.sendRedirect("/login-success")
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.stereotype.Component
+import web.remember.domain.error.CustomException
 import web.remember.domain.member.entity.Member
 import web.remember.domain.member.repository.MemberRepository
 import web.remember.util.JwtUtil
@@ -70,8 +71,8 @@ class JwtAuthenticationSuccessHandler(
         val id = kakaoId
 
         val email = kakaoAccount?.get("email") as? String ?: ""
-        val nickname = profile?.get("nickname") as? String ?: ""
-        val profileImageUrl = profile?.get("profile_image_url") as? String ?: ""
+        val nickname = profile?.get("nickname") as? String ?: throw CustomException("이름을 가져올 수 없습니다.")
+        val profileImageUrl = profile["profile_image_url"] as? String ?: ""
 
         val claims: MutableMap<String, Any> = mutableMapOf()
         claims["email"] = email
@@ -90,6 +91,7 @@ class JwtAuthenticationSuccessHandler(
             member.kakaoId = id
             member.emailL = email
             val saved = memberRepository.save(member)
+            member = saved
         }
         claims["memberId"] = member.id
         claims["kakaoId"] = member.kakaoId
@@ -117,6 +119,7 @@ class JwtAuthenticationSuccessHandler(
                 maxAge = 60 * 60 * 4 // 4시간
                 isHttpOnly = true // 자바스크립트 접근 방지 → XSS 보안
                 secure = false // HTTPS 환경에서만 전송
+                setAttribute("SameSite", "Lax")
             }
         // 응답에 쿠키 추가
         response.addCookie(jwtCookie)

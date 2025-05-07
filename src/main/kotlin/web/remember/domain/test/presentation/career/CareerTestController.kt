@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package web.remember.domain.test.presentation.career
 
 import jakarta.servlet.http.Cookie

@@ -9,10 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import web.remember.domain.error.CustomException
-import web.remember.domain.member.dto.RequestAuthLoginDto
-import web.remember.domain.member.dto.RequestCreateMemberDto
-import web.remember.domain.member.dto.ResponseCreateMemberDto
-import web.remember.domain.member.dto.ResponseKakaoMemberDto
+import web.remember.domain.member.dto.*
 import web.remember.domain.member.entity.Member
 import web.remember.domain.member.repository.MemberRepository
 import web.remember.domain.member.repository.jdsl.dto.ResponseNameAndIndustry
@@ -128,6 +125,20 @@ class MemberServiceImpl(
         val kakaoAccessToken =
             value.substringAfter("\"kakaoAccessToken\": \"").substringBefore("\"")
         return kakaoAccessToken
+    }
+
+    override fun findById(memberId: String): MemberInfoDto {
+        val member: Member =
+            memberRepository.findById(memberId).orElseThrow {
+                CustomException("해당 멤버가 존재하지 않습니다.")
+            }
+        val dto: MemberInfoDto =
+            MemberInfoDto(
+                name = member.name,
+                phoneNumber = member.phoneNumber,
+                email = member.emailL,
+            )
+        return dto
     }
 
     private fun create(memberInfo: ResponseMemberInfoDto): Member {

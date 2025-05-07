@@ -1,10 +1,7 @@
 package web.remember.domain.member.application
 
 import jakarta.servlet.http.HttpServletResponse
-import web.remember.domain.member.dto.RequestAuthLoginDto
-import web.remember.domain.member.dto.RequestCreateMemberDto
-import web.remember.domain.member.dto.ResponseCreateMemberDto
-import web.remember.domain.member.dto.ResponseKakaoMemberDto
+import web.remember.domain.member.dto.*
 import web.remember.domain.member.repository.jdsl.dto.ResponseNameAndIndustry
 
 interface MemberService {
@@ -27,4 +24,6 @@ interface MemberService {
     ): ResponseKakaoMemberDto
 
     fun findKakaoAccessToken(memberId: String): String
+
+    fun findById(memberId: String): MemberInfoDto
 }

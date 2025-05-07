@@ -167,6 +167,13 @@
         });
 
         function startQuiz(questionMap) {
+            window.addEventListener("beforeunload", confirmUnload);
+            function confirmUnload(e) {
+                e.preventDefault();
+                e.returnValue = "";
+                return "";
+            }
+
             const flatQuestions = [];
             for (const group in questionMap) {
                 const groupQuestions = questionMap[group];
@@ -219,7 +226,12 @@
             function finishQuiz() {
                 questionEl.textContent = "검사가 완료되었습니다!";
                 groupEl.textContent = "";
-                choicesEl.innerHTML = "<p>결과를 처리 중입니다...</p>";
+                choicesEl.innerHTML = `
+    <div>
+        <img src="assets/loading.gif" alt="로딩 중..." style="width: 80px; height: 80px; margin-bottom: 10px;">
+        <p>결과를 처리 중입니다... 잠시만 기다려주세요.</p>
+    </div>
+`;
 
                 // const testId = sessionStorage.getItem("testId");
 
@@ -270,7 +282,7 @@
                             },
                             body: pdfUrl
                         });
-
+                        window.removeEventListener("beforeunload", confirmUnload); // 검사 끝났을 때 해제
                         // const result = await res.text();
                         window.location.href = `/career/result?pdfUrl=${pdfUrl}`;
                     } catch (err) {

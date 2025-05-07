@@ -2,7 +2,6 @@
 
 package web.remember.domain.test.presentation.pdf
 
-import jakarta.servlet.http.HttpSession
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -31,7 +30,6 @@ class PdfCareerController(
     @PostMapping("/create")
     fun createPdf(
         @CookieValue("jwt") jwt: String?,
-        httpSession: HttpSession,
     ): ResponseEntity<String> {
         if (jwt == null) {
             throw CustomException("로그인이 필요합니다.")

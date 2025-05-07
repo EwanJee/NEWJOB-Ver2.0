@@ -14,7 +14,3 @@ management:
     tags:
       application: ${spring.application.name}
 
-server:
-  tomcat:
-    mbeanregistry:
-      enabled: true

@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import web.remember.aop.MeasureExecutionTime
 import web.remember.domain.error.CustomException
 import java.net.URL
 
@@ -14,6 +15,7 @@ class S3ServiceImpl(
     @Value("\${cloud.aws.s3.bucket}")
     private lateinit var bucketName: String
 
+    @MeasureExecutionTime
     override fun uploadFile(
         file: ByteArray,
         fileName: String,
@@ -38,7 +40,6 @@ class S3ServiceImpl(
             } catch (e: Exception) {
                 throw CustomException("파일을 찾을 수 없습니다. ${e.message}")
             }
-//        val encodedUrl = URLEncoder.encode(url.toString(), "UTF-8")
         return url.toString()
     }
 }

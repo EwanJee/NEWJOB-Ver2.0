@@ -49,4 +49,17 @@ class HttpLogAspect {
 
         return result
     }
+
+    @Around("@annotation(MeasureExecutionTime)")
+    fun logExecutionTime(joinPoint: ProceedingJoinPoint): Any? {
+        val startTime = System.currentTimeMillis()
+        val proceed = joinPoint.proceed()
+        val endTime = System.currentTimeMillis()
+        logger.info("[METHOD] {} executed in {} ms", joinPoint.signature, (endTime - startTime))
+        return proceed
+    }
 }
+
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION)
+annotation class MeasureExecutionTime

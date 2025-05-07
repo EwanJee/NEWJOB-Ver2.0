@@ -6,6 +6,7 @@ import com.nasa.todaynasa.application.service.apod.request.gpt.RequestAnswerGpt
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import web.remember.aop.MeasureExecutionTime
 import web.remember.domain.error.CustomException
 
 @Service
@@ -14,6 +15,7 @@ class GptServiceImpl(
     private val gptClient: WebClient,
     private val objectMapper: ObjectMapper,
 ) : GptService {
+    @MeasureExecutionTime
     override fun getGptResponse(requestBody: String): String {
         val requestGpt =
             RequestGpt(

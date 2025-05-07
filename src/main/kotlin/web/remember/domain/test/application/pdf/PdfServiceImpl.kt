@@ -48,7 +48,6 @@ class PdfServiceImpl : PdfService {
             val form = PdfAcroForm.getAcroForm(pdfDoc, true)
 
             val fontPath = ClassPathResource("static/assets/fonts/korean_font.ttf").path
-            println(fontPath)
             val koreanFont = PdfFontFactory.createFont(fontPath, PdfEncodings.IDENTITY_H)
 
             // 모든 폼 필드에 한글 폰트 적용
@@ -190,7 +189,6 @@ class PdfServiceImpl : PdfService {
 
             // 문서 닫기
             pdfDoc.close()
-            println(outputStream.toByteArray())
             return outputStream.toByteArray()
         } catch (e: Exception) {
             throw CustomException("PDF 변환 중 오류가 발생했습니다.")

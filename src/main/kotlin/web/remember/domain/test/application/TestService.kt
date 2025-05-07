@@ -5,4 +5,9 @@ interface TestService {
         testId: String,
         url: String,
     ): String
+
+    fun isValidForPayment(
+        testId: Long,
+        memberId: String,
+    ): Boolean
 }

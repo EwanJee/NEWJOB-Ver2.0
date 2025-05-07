@@ -35,4 +35,7 @@ class Test(
 
     @Column(name = "url")
     var url: String = ""
+
+    @Column(name = "paid")
+    var paid: Boolean = false
 }

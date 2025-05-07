@@ -9,4 +9,10 @@ import web.remember.domain.test.entity.Test
 interface TestRepository : JpaRepository<Test, Long> {
     @Query("SELECT t.data FROM Test t WHERE t.id = :testId")
     fun findDataById(testId: Long): MutableMap<String, String>?
+
+    @Query("SELECT t.paid FROM Test t WHERE t.id = :testId AND t.memberId = :memberId")
+    fun findPaidByIdAndMemberId(
+        testId: Long,
+        memberId: String,
+    ): Boolean?
 }

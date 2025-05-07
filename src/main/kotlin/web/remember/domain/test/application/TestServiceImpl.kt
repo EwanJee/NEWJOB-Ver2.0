@@ -21,4 +21,11 @@ class TestServiceImpl(
         test.url = url
         return test.url
     }
+
+    override fun isValidForPayment(
+        testId: Long,
+        memberId: String,
+    ): Boolean =
+        testRepository.findPaidByIdAndMemberId(testId, memberId)
+            ?: throw CustomException("결제 정보가 없습니다.")
 }

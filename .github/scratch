@@ -1,0 +1,2 @@
+          #            docker-compose -f compose.prod.monitoring.yaml up -d  # Docker Compose로 새로운 컨테이너 실행
+          #            /setmonitor.sh

@@ -1,9 +1,12 @@
-name: Deploy to EC2
+name: Deploy
 
 on:
   push:
     branches: [ "main" ]  # main 브랜치에 푸시될 때 실행
-
+  workflow_run:
+    workflows: ["CI"]  # 정확히 ci.yml의 name: 값
+    types:
+      - completed
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -17,29 +20,25 @@ jobs:
         run: |
           echo "${SSH_PRIVATE_KEY}" > /tmp/ssh_key
           chmod 600 /tmp/ssh_key
+
       - name: Deploy and Build on EC2
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          echo "${SSH_PRIVATE_KEY}" > /tmp/ssh_key
-          chmod 600 /tmp/ssh_key
-          ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key ${EC2_USER}@${EC2_HOST} << 'EOF'
-            # Git pull to fetch the latest code
-            cd ~/remember/NEWJOB-Ver2.0
-            git pull origin main
-            # Clean and build project
-            ./gradlew clean
-            ./gradlew clean build
-            # Stop existing containers and deploy new ones
-            docker-compose -f compose.prod.yaml down --remove-orphans --timeout 30 || {
-              echo "docker-compose down failed, forcing stop of all containers";
-              docker stop $(docker ps -aq) || true
-              docker rm $(docker ps -aq) || true
-            }
-            ./automation.sh  # 이미지 빌드
-            docker-compose -f compose.prod.yaml up -d  # Docker Compose로 새로운 컨테이너 실행
-#            docker-compose -f compose.prod.monitoring.yaml up -d  # Docker Compose로 새로운 컨테이너 실행
-#            ./setmonitor.sh
-          EOF
+               echo "${SSH_PRIVATE_KEY}" > /tmp/ssh_key
+               chmod 600 /tmp/ssh_key
+               ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key ${EC2_USER}@${EC2_HOST} bash -s <<EOF
+               cd ~/remember/NEWJOB-Ver2.0
+               git pull origin main
+               ./gradlew clean
+               ./gradlew clean build
+               docker-compose -f compose.prod.yaml down --remove-orphans --timeout 30 || {
+                echo "docker-compose down failed, forcing stop of all containers"
+                docker stop \$(docker ps -aq) || true
+                docker rm \$(docker ps -aq) || true
+               }
+               ./automation.sh
+               docker-compose -f compose.prod.yaml up -d
+               EOF

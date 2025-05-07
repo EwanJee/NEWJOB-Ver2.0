@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping
 
 @Controller
 class GlobalController {
+    @GetMapping("/career/result/payment")
+    fun careerPayment(): String = "forward:/career/careerpayment.html"
+
     @GetMapping("/oauth2")
     fun oauth2(): String = "forward:/oauth2.html"
 

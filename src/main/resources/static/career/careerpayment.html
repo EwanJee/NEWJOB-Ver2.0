@@ -4,8 +4,6 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>결제</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-    <!--    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>-->
     <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
 </head>
 <body>
@@ -41,9 +39,8 @@
             }
             const notified = await fetch(`/api/v1/payment/career/complete`, {
                 method: "POST",
-                credentials: "include",// JWT 쿠키 포함
+                credentials: "include",
                 headers: {"Content-Type": "application/json"},
-                // paymentId와 주문 정보를 서버에 전달합니다
                 body: JSON.stringify({
                     paymentId: response.paymentId,
                 }),
@@ -56,7 +53,6 @@
             // 결제 완료 후 처리
             alert("결제가 완료되었습니다.");
         } catch (e) {
-
         }
     }
 </script>

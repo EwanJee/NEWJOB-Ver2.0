@@ -4,7 +4,6 @@ package web.remember.domain.member.presentation
 
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
-import jakarta.servlet.http.HttpSession
 import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.springframework.http.ResponseEntity
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*
 import web.remember.domain.member.application.MemberRedisService
 import web.remember.domain.member.application.MemberService
 import web.remember.domain.member.dto.RequestCreateMemberDto
-import web.remember.domain.member.dto.ResponseCreateMemberDto
 import web.remember.util.JwtUtil
 import web.remember.util.KakaoUtil
 
@@ -47,22 +45,7 @@ class MemberController(
     }
 
     @PostMapping()
-    fun approach(
-        @RequestBody @Valid requestDto: RequestCreateMemberDto,
-        httpSession: HttpSession,
-    ): ResponseEntity<ResponseCreateMemberDto> {
-        val responseDto = memberService.create(requestDto)
-        httpSession.setAttribute("memberId", responseDto.id)
-        return ResponseEntity.ok(responseDto)
-    }
-
-//    @PostMapping("/login")
-//    fun authLogin(
-//        @RequestBody dto: RequestAuthLoginDto,
-//        httpSession: HttpSession,
-//    ): ResponseEntity<ResponseCreateMemberDto> {
-//        val responseDto = memberService.create(dto)
-//        httpSession.setAttribute("memberId", responseDto.id)
-//        return ResponseEntity.ok(responseDto)
-//    }
+    fun createMember(
+        @RequestBody @Valid memberDto: RequestCreateMemberDto,
+    ): ResponseEntity<Void> = ResponseEntity.ok().build()
 }

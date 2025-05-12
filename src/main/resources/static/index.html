@@ -75,6 +75,19 @@
                                             <input type="text" class="form-control mb-3" id="industry"
                                                    placeholder="업계를 입력해주세요" required>
                                         </div>
+                                        <div class="form-group text-left" style="margin-bottom: 10px;">
+                                            <div style="max-height: 100px; overflow-y: auto; padding: 10px; border: 1px solid #ccc; font-size: 13px;">
+                                                <strong>[개인정보 수집 및 이용 동의]</strong><br>
+                                                [리멤버]는 개인정보 보호법에 따라 아래와 같이 개인정보를 수집·이용합니다.<br><br>
+                                                1. 수집 항목: 이름, 전화번호, 업계<br>
+                                                2. 수집 목적: 회원 식별 및 서비스 제공, 고객 응대<br>
+                                                3. 보유 기간: 수집일로부터 1년 또는 회원 요청 시 즉시 파기<br><br>
+                                                ※ 귀하는 동의를 거부할 권리가 있으며, 동의하지 않을 경우 서비스 이용에 제한이 있을 수 있습니다.
+                                            </div>
+                                            <div style="margin-top: 5px;">
+                                                <label><input type="checkbox" id="privacyAgree"> 위 내용을 읽고 동의합니다.</label>
+                                            </div>
+                                        </div>
                                         <input type="submit" class="btn btn-default btn-sand" value="카카오톡 로그인 시작하기">
                                     </div>
                                 </form>
@@ -107,9 +120,21 @@
     $(document).ready(function () {
         $(".bg-color").fadeIn(10);
         $(".newsletter-signup").on("submit", function (e) {
+
             const name = $("#name").val();
             const phoneNumber = $("#phoneNumber").val();
             const industry = $("#industry").val();
+            if (!name || !phoneNumber || !industry) {
+                alert("모든 항목을 입력해주세요.");
+                return;
+            }
+            console.log("이름:", name);
+            const agreed = $("#privacyAgree").is(":checked");
+
+            if (!agreed) {
+                alert("개인정보 수집 및 이용에 동의해주세요.");
+                return; // 제출 중단
+            }
 
             $.ajax({
                 url: "/api/v1/members",
@@ -134,21 +159,6 @@
             // window.location.href = "/oauth2/authorization/kakao";
         });
     });
-
-    $("#count-down").TimeCircles(
-        {
-            circle_bg_color: "#2E5663",
-            use_background: true,
-            bg_width: 1.0,
-            fg_width: 0.02,
-            time: {
-                Days: {color: "#EDB400"},
-                Hours: {color: "#EDB400"},
-                Minutes: {color: "#EDB400"},
-                Seconds: {color: "#EDB400"}
-            }
-        }
-    );
 
 </script>
 

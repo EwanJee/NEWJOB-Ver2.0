@@ -129,25 +129,27 @@
                 return; // 제출 중단
             }
 
-            $.ajax({
-                url: "/api/v1/members",
-                type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({
-                    name: name,
-                    phoneNumber: phoneNumber,
-                    industry: industry
-                }),
-                success: function (response) {
-                    $(".bg-color").fadeOut(10, function () {
-                        window.location.href = "/oauth2/authorization/kakao";
-                    });
-                },
-                error: function (xhr, status, error) {
-                    $(".alert-warning").text("제출 중 오류가 발생했습니다. 다시 시도해주세요.").show();
-                    $(".alert-success").hide();
-                }
-            });
+            window.location.href = "/oauth2/authorization/kakao";
+
+            // $.ajax({
+            //     url: "/api/v1/members",
+            //     type: "POST",
+            //     contentType: "application/json",
+            //     data: JSON.stringify({
+            //         name: name,
+            //         phoneNumber: phoneNumber,
+            //         industry: industry
+            //     }),
+            //     success: function (response) {
+            //         $(".bg-color").fadeOut(10, function () {
+            //             window.location.href = "/oauth2/authorization/kakao";
+            //         });
+            //     },
+            //     error: function (xhr, status, error) {
+            //         $(".alert-warning").text("제출 중 오류가 발생했습니다. 다시 시도해주세요.").show();
+            //         $(".alert-success").hide();
+            //     }
+            // });
             e.preventDefault();
             // window.location.href = "/oauth2/authorization/kakao";
         });

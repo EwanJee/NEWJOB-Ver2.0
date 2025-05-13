@@ -11,6 +11,9 @@ class GlobalController {
     @GetMapping("/oauth2")
     fun oauth2(): String = "forward:/oauth2.html"
 
+    @GetMapping("/privacy-policy")
+    fun privacyPolicy(): String = "forward:/privacy-policy.html"
+
     @GetMapping("/login")
     fun index(): String = "forward:/login.html"
 

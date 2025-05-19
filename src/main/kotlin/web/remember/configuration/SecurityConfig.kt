@@ -38,6 +38,8 @@ class SecurityConfig(
                         "/favicon.ico",
                         "/image/**",
                         "/text/**",
+                        "/public/**",
+                        "/error/**",
                     ).permitAll()
                     .requestMatchers("/api/v1/**")
                     .authenticated()

@@ -3,6 +3,7 @@ package web.remember.configuration.filter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.http.ResponseCookie
 import org.springframework.security.core.Authentication
@@ -29,6 +30,10 @@ class JwtAuthenticationSuccessHandler(
     private val authorizedClientService: OAuth2AuthorizedClientService,
     private val redisTemplate: RedisTemplate<String, String>,
 ) : AuthenticationSuccessHandler {
+    @Value("\${spring.profiles.active}")
+    private lateinit var activeProfile: String
+    private val logger = org.slf4j.LoggerFactory.getLogger(JwtAuthenticationSuccessHandler::class.java)
+
     override fun onAuthenticationSuccess(
         request: HttpServletRequest?,
         response: HttpServletResponse?,
@@ -72,11 +77,14 @@ class JwtAuthenticationSuccessHandler(
 
         val email = kakaoAccount?.get("email") as? String ?: ""
         val nickname = profile?.get("nickname") as? String ?: throw CustomException("이름을 가져올 수 없습니다.")
+        val name = kakaoAccount["name"] as? String ?: throw CustomException("이름을 가져올 수 없습니다.")
         val profileImageUrl = profile["profile_image_url"] as? String ?: ""
+        val phoneNumber = kakaoAccount["phone_number"] as? String ?: throw CustomException("전화번호를 가져올 수 없습니다.")
+        logger.info("name: $name, email: $email, phoneNumber: $phoneNumber")
 
         val claims: MutableMap<String, Any> = mutableMapOf()
-        claims["email"] = email
-        claims["name"] = nickname
+//        claims["email"] = email
+        claims["name"] = name
         claims["image"] = profileImageUrl
 
         var member = memberRepository.findByKakaoId(id)
@@ -85,7 +93,7 @@ class JwtAuthenticationSuccessHandler(
             member =
                 Member(
                     name = nickname,
-                    phoneNumber = "",
+                    phoneNumber = normalizeKoreanPhoneNumber(phoneNumber),
                     industry = "",
                 )
             member.kakaoId = id
@@ -95,8 +103,8 @@ class JwtAuthenticationSuccessHandler(
         }
         claims["memberId"] = member.id
         claims["kakaoId"] = member.kakaoId
-        claims["industry"] = member.industry
-        claims["phoneNumber"] = member.phoneNumber
+//        claims["industry"] = member.industry
+//        claims["phoneNumber"] = member.phoneNumber
         // redis
         val redisKey = "kakao:token:$kakaoId"
         val value =
@@ -113,18 +121,38 @@ class JwtAuthenticationSuccessHandler(
 
         redisTemplate.opsForValue().set(redisKey, value, ttl)
         val jwt = jwtUtil.generateToken(kakaoId.toString(), claims)
-        val jwtCookie =
-            ResponseCookie
-                .from("jwt", jwt)
-                .path("/")
-                .httpOnly(true)
-                .maxAge(Duration.ofHours(4))
-                .sameSite("Lax") // 또는 SameSite=None, HTTPS일 땐 secure도 true
-                .secure(false) // HTTPS 환경이라면 true
-                .build()
-        // 응답에 쿠키 추가
-//        response.addCookie(jwtCookie)
+        val jwtCookie: ResponseCookie =
+            if (activeProfile == "dev") {
+                createCookieDev(jwt)
+            } else {
+                createCookieProd(jwt)
+            }
         response.addHeader("Set-Cookie", jwtCookie.toString())
         response.sendRedirect("/login-success")
     }
+
+    private fun normalizeKoreanPhoneNumber(number: String): String =
+        number
+            .replace("+82", "0")
+            .replace(Regex("[^0-9]"), "")
+
+    private fun createCookieDev(jwt: String): ResponseCookie =
+        ResponseCookie
+            .from("jwt", jwt)
+            .path("/")
+            .httpOnly(true)
+            .maxAge(Duration.ofHours(4))
+            .sameSite("Lax")
+            .secure(false)
+            .build()
+
+    private fun createCookieProd(jwt: String): ResponseCookie =
+        ResponseCookie
+            .from("jwt", jwt)
+            .path("/")
+            .httpOnly(true)
+            .maxAge(Duration.ofHours(4))
+            .sameSite("None")
+            .secure(true)
+            .build()
 }

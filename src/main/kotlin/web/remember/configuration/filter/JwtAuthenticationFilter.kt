@@ -43,13 +43,13 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
                         .parseClaimsJws(token)
                         .body
 
-                val name = claims["name"] as String
-                val email = claims["email"] as String
-                val phoneNumber = claims["phoneNumber"] as String? ?: ""
-                val industry = claims["industry"] as String? ?: ""
-                val kakaoId = (claims["kakaoId"] as Number).toLong()
-                val memberId = claims["memberId"] as String
-                val imageUrl = claims["image"] as String? ?: ""
+//                val name = claims["name"] as String
+//                val email = claims["email"] as String
+//                val phoneNumber = claims["phoneNumber"] as String? ?: ""
+//                val industry = claims["industry"] as String? ?: ""
+//                val kakaoId = (claims["kakaoId"] as Number).toLong()
+//                val memberId = claims["memberId"] as String
+//                val imageUrl = claims["image"] as String? ?: ""
 
                 val username = claims.subject
                 val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))

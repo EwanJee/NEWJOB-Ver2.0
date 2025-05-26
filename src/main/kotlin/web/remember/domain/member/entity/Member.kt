@@ -1,12 +1,15 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package web.remember.domain.member.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Table(name = "member")
+@EntityListeners(AuditingEntityListener::class)
 @Entity
 class Member(
     name: String,
@@ -31,6 +34,10 @@ class Member(
 
     @Column(name = "industry")
     var industry: String = industry
+
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    lateinit var createdAt: LocalDateTime
 
     private fun convert(phoneNumber: String): String {
         val converted =

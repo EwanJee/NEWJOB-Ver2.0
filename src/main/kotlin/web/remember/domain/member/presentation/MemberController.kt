@@ -24,6 +24,24 @@ class MemberController(
 ) {
     val logger: Logger = org.slf4j.LoggerFactory.getLogger(MemberController::class.java)
 
+    @GetMapping("/me")
+    fun getMe(
+        @CookieValue("jwt") jwt: String,
+    ): ResponseEntity<Map<String, String>> {
+        val claims: MutableMap<String, Any> = jwtUtil.parseClaims(jwt)
+        val imageUrl = claims["image"] as String
+        val name = claims["name"] as String
+        if (claims["kakaoId"] == null || claims["memberId"] == null) {
+            return ResponseEntity.badRequest().build()
+        }
+        return ResponseEntity.ok(
+            mapOf(
+                "image" to imageUrl,
+                "name" to name,
+            ),
+        )
+    }
+
     @GetMapping("/logout")
     fun logout(
         @CookieValue("jwt") jwt: String,

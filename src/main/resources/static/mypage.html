@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>리멤버 - 마이페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/timerstyles.css">
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        .pagination {
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .panel {
+            border-radius: 6px;
+        }
+
+        .pagination > li > a {
+            background-color: white;
+            color: #337ab7;
+            border: 1px solid #ddd;
+            margin: 0 2px;
+        }
+
+        .pagination > li.active > a {
+            background-color: #337ab7;
+            color: white;
+            border: 1px solid #337ab7;
+        }
+    </style>
+</head>
+<body>
+<div class="row">
+    <div class="col-sm-12 text-center" style="margin-top: 20px;">
+        <button onclick="location.href='/login-success'" class="btn btn-primary">
+            홈으로 이동하기
+        </button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12 text-center" style="margin-top: 40px; margin-bottom: 30px;">
+        <img id="profile-img" src="" alt="프로필 이미지"
+             style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+        <h3 id="profile-name" style="margin-top: 15px; font-weight: 600;"></h3>
+    </div>
+</div>
+
+<div class="bg">
+    <div class="bg-color" style="display: none;">
+        <div class="container content">
+            <h2>내 진단 결과 목록</h2>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="row" id="test-list" style="margin-top: 30px;"></div>
+                    <ul id="pagination" class="pagination"
+                        style="display: flex; justify-content: center; flex-wrap: wrap;"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script>
+    async function loadPage(page = 1) {
+        $(".bg-color").fadeIn(10);
+
+        try {
+            const testRes = await fetch(`/api/v1/tests?page=${page}`, {
+                method: "GET",
+                credentials: "include"
+            });
+
+            const data = await testRes.json();
+            const tests = data.content;
+            const totalPages = data.totalPages;
+            let currentPage = data.page + 1;
+            const size = data.size;
+            const isLast = data.isLast;
+
+            // 테스트 목록 렌더링
+            renderTestList(tests);
+
+            // 페이지네이션 렌더링
+            renderPagination(currentPage, totalPages);
+        } catch (err) {
+            console.error("API 요청 중 오류 발생:", err);
+            $("#test-list").html("<p class='text-danger'>에러가 발생했습니다.</p>");
+        }
+    }
+    function closeAllSseConnections() {
+        Object.keys(sseConnections).forEach(id => {
+            sseConnections[id].close();
+        });
+        Object.keys(sseConnections).forEach(id => {
+            delete sseConnections[id];
+        });
+    }
+
+    const sseConnections = {}; // 전역에 저장
+
+    function subscribeToSse(testId) {
+        if (sseConnections[testId]) {
+            return; // 이미 연결된 경우 무시
+        }
+        const eventSource = new EventSource(`/api/v1/stream/${testId}`, {
+            withCredentials: true,
+        });
+        sseConnections[testId] = eventSource;
+
+        eventSource.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (data.status !== 'IN_PROGRESS') {
+                const url = data.url;
+                const container = document.querySelector(`#test-${testId} .panel-body`);
+                if (container) {
+                    // 기존 메시지를 찾아서 교체
+                    const placeholder = container.querySelector('.text-muted');
+                    if (placeholder) {
+                        placeholder.outerHTML = `<a href="${url}" class="btn btn-info btn-sm" target="_blank">결과 보기</a>`;
+                    } else {
+                        // 예외적으로 없을 경우 append
+                        container.innerHTML += `<a href="${url}" class="btn btn-info btn-sm" target="_blank">결과 보기</a>`;
+                    }
+                }
+                eventSource.close(); // SSE 종료
+                console.log(`SSE 종료 확인: ${eventSource.readyState}`);
+                delete sseConnections[testId];
+            }
+        };
+
+        eventSource.onerror = function () {
+            eventSource.close(); // SSE 종료
+            delete sseConnections[testId];
+        };
+    }
+
+    // 테스트 목록 렌더링 함수
+    function renderTestList(tests) {
+        if (!tests || tests.length === 0) {
+            $("#test-list").html("<p class='text-center'>진단 결과가 없습니다.</p>");
+            return;
+        }
+
+        let html = '';
+        tests.forEach(test => {
+            html += `
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <div class="panel panel-default" id="test-${test.id}">
+                        <div class="panel-body">
+                            <h4>${test.name}</h4>
+                            <p><small>진단 날짜: ${new Date(test.createdAt).toLocaleString()}</small></p>
+                            ${
+                test.url
+                    ? `<a href="${test.url}" class="btn btn-info btn-sm" target="_blank">결과 보기</a>`
+                    : `<span class="text-muted">PDF 생성 중...</span>`
+            }
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        $("#test-list").html(html);
+
+        // SSE 구독
+        tests.forEach(test => {
+            if (!test.url) {
+                subscribeToSse(test.id);
+            }
+        });
+    }
+
+    // 페이지네이션 렌더링 함수
+    function renderPagination(currentPage, totalPages) {
+        let paginationHtml = '';
+
+        // 이전 버튼
+        paginationHtml += `
+            <li class="${currentPage <= 1 ? 'disabled' : ''}">
+                <a href="#" onclick="${currentPage > 1 ? 'changePage(' + (currentPage - 1) + '); return false;' : 'return false;'}" aria-label="이전">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        `;
+
+        // 페이지 번호
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+
+        // 첫 페이지로 이동 버튼 (시작 페이지가 1보다 크면 표시)
+        if (startPage > 1) {
+            paginationHtml += `
+                <li>
+                    <a href="#" onclick="changePage(1); return false;">1</a>
+                </li>
+            `;
+
+            // 건너뛰기 표시
+            if (startPage > 2) {
+                paginationHtml += `<li class="disabled"><a href="#">...</a></li>`;
+            }
+        }
+
+        // 페이지 번호 버튼
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHtml += `
+                <li class="${i === currentPage ? 'active' : ''}">
+                    <a href="#" onclick="changePage(${i}); return false;">${i}</a>
+                </li>
+            `;
+        }
+
+        // 마지막 페이지로 이동 버튼 (끝 페이지가 총 페이지보다 작으면 표시)
+        if (endPage < totalPages) {
+            // 건너뛰기 표시
+            if (endPage < totalPages - 1) {
+                paginationHtml += `<li class="disabled"><a href="#">...</a></li>`;
+            }
+
+            paginationHtml += `
+                <li>
+                    <a href="#" onclick="changePage(${totalPages}); return false;">${totalPages}</a>
+                </li>
+            `;
+        }
+
+        // 다음 버튼
+        paginationHtml += `
+            <li class="${currentPage >= totalPages ? 'disabled' : ''}">
+                <a href="#" onclick="${currentPage < totalPages ? 'changePage(' + (currentPage + 1) + '); return false;' : 'return false;'}" aria-label="다음">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        `;
+
+        $("#pagination").html(paginationHtml);
+    }
+
+    // 페이지 변경 함수
+    function changePage(page) {
+        // URL 변경
+        const url = new URL(window.location);
+        url.searchParams.set('page', page);
+        window.history.pushState({}, '', url);
+
+        // 데이터 로드
+        loadPage(page);
+    }
+
+    // 페이지 로드 시 실행
+    $(document).ready(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = parseInt(urlParams.get("page") || "1", 10);
+
+        // 프로필 로드
+        (async function fetchUserProfile() {
+            try {
+                const response = await fetch("/api/v1/members/me", {
+                    method: "GET",
+                    credentials: "include",
+                });
+
+                if (!response.ok) {
+                    alert("로그인이 필요합니다.");
+                    window.location.href = "/";
+                    return;
+                }
+
+                const data = await response.json();
+                $('#profile-img').attr('src', data.image);
+                $('#profile-name').text(data.name);
+            } catch (error) {
+                console.error("유저 정보를 불러오는 중 에러:", error);
+            }
+        })();
+
+        // 페이지 데이터 로드
+        loadPage(page);
+    });
+</script>
+</body>
+</html>

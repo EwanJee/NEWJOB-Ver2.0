@@ -65,7 +65,8 @@
                                                 <label><input type="checkbox" id="privacyAgree"> 위 내용을 읽고 동의합니다.</label>
                                             </div>
                                             <div style="text-align: right; margin-top: 5px;">
-                                                <a href="/privacy-policy" target="_blank" style="font-size: 12px; color: #007bff;">
+                                                <a href="/privacy-policy" target="_blank"
+                                                   style="font-size: 12px; color: #007bff;">
                                                     [자세히 보기]
                                                 </a>
                                             </div>
@@ -104,16 +105,13 @@
 
     $(document).ready(function () {
         $(".bg-color").fadeIn(10);
+        fetch('/api/v1/members/me', {credentials: 'include'})
+            .then(res => {
+                if (res.ok) {
+                    window.location.href = "/login-success";
+                }
+            });
         $(".newsletter-signup").on("submit", function (e) {
-
-            // const name = $("#name").val();
-            // const phoneNumber = $("#phoneNumber").val();
-            // const industry = $("#industry").val();
-            // if (!name || !phoneNumber || !industry) {
-            //     alert("모든 항목을 입력해주세요.");
-            //     return;
-            // }
-            // console.log("이름:", name);
             const agreed = $("#privacyAgree").is(":checked");
 
             if (!agreed) {
@@ -122,28 +120,7 @@
             }
 
             window.location.href = "/oauth2/authorization/kakao";
-
-            // $.ajax({
-            //     url: "/api/v1/members",
-            //     type: "POST",
-            //     contentType: "application/json",
-            //     data: JSON.stringify({
-            //         name: name,
-            //         phoneNumber: phoneNumber,
-            //         industry: industry
-            //     }),
-            //     success: function (response) {
-            //         $(".bg-color").fadeOut(10, function () {
-            //             window.location.href = "/oauth2/authorization/kakao";
-            //         });
-            //     },
-            //     error: function (xhr, status, error) {
-            //         $(".alert-warning").text("제출 중 오류가 발생했습니다. 다시 시도해주세요.").show();
-            //         $(".alert-success").hide();
-            //     }
-            // });
             e.preventDefault();
-            // window.location.href = "/oauth2/authorization/kakao";
         });
     });
 </script>

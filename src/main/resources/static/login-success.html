@@ -11,6 +11,52 @@
     <link rel="shortcut icon" href="assets/images/icons/favicon.ico">
 </head>
 <body>
+<style>
+    .profile-box {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        z-index: 1000;
+    }
+
+    .profile-content {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        background-color: white;
+        padding: 6px 12px;
+        border-radius: 30px;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 8px;
+    }
+
+    .profile-name {
+        font-weight: 500;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .mypage-text {
+        font-size: 13px;
+        color: #555;
+        margin-left: 8px;
+        text-decoration: underline;
+    }
+</style>
+<div class="profile-box">
+    <div class="profile-content" onclick="location.href='/mypage?page=1'">
+        <img id="profile-img" src="" alt="프로필 이미지" class="profile-img">
+        <span id="profile-name" class="profile-name"></span>
+        <span class="mypage-text">마이페이지</span>
+    </div>
+</div>
 <div class="bg">
     <div class="bg-color" style="display: none;">
         <div class="container content">
@@ -21,7 +67,9 @@
                         <h3>원하는 진단을 선택해주세요</h3>
                         <div style="margin-top: 40px;">
                             <button class="btn btn-primary btn-lg" id="careerBtn">경력 진단</button>
-                            <button class="btn btn-success btn-lg" id="retirementBtn" style="margin-left: 20px;">퇴직 진단 (개발 ing)</button>
+                            <button class="btn btn-success btn-lg" id="retirementBtn" style="margin-left: 20px;">퇴직 진단
+                                (개발 ing)
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -35,11 +83,31 @@
 <script src="assets/js/bootstrap.min.js"></script>
 
 <script>
-    // 페이지 로딩 시 fadeIn 효과
     $(document).ready(function () {
         $(".bg-color").fadeIn(10);
 
-        // 버튼 클릭 시 페이지 이동
+        // 1. 사용자 정보 불러오기
+        (async function fetchUserProfile() {
+            try {
+                const response = await fetch("/api/v1/members/me", {
+                    method: "GET",
+                    credentials: "include",
+                });
+
+                if (!response.ok) {
+                    alert("로그인이 필요합니다.");
+                    window.location.href = "/";
+                }
+
+                const data = await response.json();
+                $('#profile-img').attr('src', data.image);
+                $('#profile-name').text(data.name);
+            } catch (error) {
+                console.error("유저 정보를 불러오는 중 에러:", error);
+            }
+        })();
+
+        // 2. 버튼 클릭 이벤트는 항상 실행되게
         $("#careerBtn").on("click", function () {
             $(".bg-color").fadeOut(5, function () {
                 window.location.href = "/career";
@@ -53,5 +121,6 @@
         });
     });
 </script>
+
 </body>
 </html>

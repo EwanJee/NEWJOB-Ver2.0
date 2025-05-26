@@ -1,4 +1,4 @@
-package web.remember.domain.test.presentation.pdf.dto
+package web.remember.domain.pdf.presentation.dto
 
 import web.remember.domain.error.annotation.CheckNotEmptyString
 

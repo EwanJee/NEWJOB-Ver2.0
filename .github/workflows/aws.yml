@@ -34,11 +34,11 @@ jobs:
                git pull origin main
                ./gradlew clean
                ./gradlew clean build
-               docker-compose -f compose.prod.yaml -f compose.amqp.yaml down --remove-orphans --timeout 30 || {
+               docker-compose -f compose.prod.yaml --remove-orphans --timeout 30 || {
                 echo "docker-compose down failed, forcing stop of all containers"
                 docker stop \$(docker ps -aq) || true
                 docker rm \$(docker ps -aq) || true
                }
                ./automation.sh
-               docker-compose -f compose.prod.yaml -f compose.amqp.yaml up -d
+               docker-compose -f compose.prod.yaml up -d
                EOF

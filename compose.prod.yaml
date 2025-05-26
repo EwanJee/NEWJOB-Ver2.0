@@ -3,6 +3,19 @@ networks:
     driver: bridge
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - my_network
+
   api:
     build:
       context: .
@@ -17,8 +30,11 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${PASSWORD}
       SPRING_REDIS_HOST: ${REDIS_HOST}
       SPRING_REDIS_PORT: 6379
+      SPRING_RABBITMQ_HOST: rabbitmq  # 추가
     networks:
       - my_network
+    depends_on:
+      - rabbitmq
 
   nginx:
     container_name: nginx

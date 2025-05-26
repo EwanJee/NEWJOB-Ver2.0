@@ -5,9 +5,13 @@ package web.remember.domain.test.entity
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
 import org.hibernate.annotations.DynamicUpdate
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import web.remember.domain.question.entity.TestType
+import java.time.LocalDateTime
 
 @DynamicUpdate // 변경된 필드만 업데이트
+@EntityListeners(AuditingEntityListener::class)
 @Table(name = "test")
 @Entity
 class Test(
@@ -38,4 +42,8 @@ class Test(
 
     @Column(name = "paid")
     var paid: Boolean = false
+
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    var createdAt: LocalDateTime? = null
 }

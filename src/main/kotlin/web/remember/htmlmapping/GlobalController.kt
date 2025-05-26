@@ -2,9 +2,15 @@ package web.remember.htmlmapping
 
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestParam
 
 @Controller
 class GlobalController {
+    @GetMapping("/mypage")
+    fun mypage(
+        @RequestParam(required = false) testId: String?,
+    ): String = "forward:/mypage.html"
+
     @GetMapping("/error")
     fun error(): String = "forward:/error.html"
 

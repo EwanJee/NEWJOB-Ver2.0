@@ -7,8 +7,7 @@
     <link href="assets/css/bootstrap.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/timerstyles.css">
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="shortcut icon" href="assets/images/icons/favicon.ico">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
         #choices {
             margin-top: 20px;
@@ -125,7 +124,6 @@
     $(document).ready(function (message) {
         $(".bg-color").fadeIn(10);
 
-        const token = getCookie("jwt");
         $("#startButton").on("click", async function () {
             try {
                 const questionResponse = await fetch("/api/v1/questions/career", {
@@ -172,6 +170,7 @@
 
         function startQuiz(questionMap) {
             window.addEventListener("beforeunload", confirmUnload);
+
             function confirmUnload(e) {
                 e.preventDefault();
                 e.returnValue = "";
@@ -258,10 +257,11 @@
                             credentials: "include",// JWT 쿠키 포함
                             method: "PUT"
                         });
+
                     })
                     .then(finishRes => {
+                        window.removeEventListener("beforeunload", confirmUnload); // 검사 끝났을 때 해제
                         if (!finishRes.ok) throw new Error("검사 종료 실패");
-                        // 결과 페이지로 이동하거나 결과 출력
                         fetchAndSendStaticPdf();
                     })
                     .catch(err => {
@@ -271,38 +271,19 @@
             }
 
             async function fetchAndSendStaticPdf() {
-                try {
-
-                    // 3. 서버에 전송
-                    const response = await fetch("/api/v1/pdf/career/create", {
-                        credentials: "include",// JWT 쿠키 포함
-                        method: "POST"
-                        // body: formData
-                    });
-                    const pdfUrl = await response.text();
-
-                    try {
-                        const res = await fetch("/api/v1/kakao/sendPdf", {
-                            method: "POST",
-                            credentials: "include",// JWT 쿠키 포함
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: pdfUrl
-                        });
-                        window.removeEventListener("beforeunload", confirmUnload); // 검사 끝났을 때 해제
-                        // const result = await res.text();
-                        window.location.href = `/career/result?pdfUrl=${pdfUrl}`;
-                    } catch (err) {
-                        console.error(err);
-                        alert("PDF 전송에 실패했습니다.");
-                    }
-                } catch (err) {
-                    console.error("PDF 처리 중 오류:", err);
-                    alert("결과 PDF를 불러오는 데 실패했습니다.");
+                // window.location.href = `/career/result`;
+                const response = await fetch("/api/v1/pdf/career/create", {
+                    method: "POST",
+                    credentials: "include",
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error);
+                    window.location.href = "/"; // index 페이지로 이동
                 }
+                const data = await response.json();
+                window.location.href = `mypage?testId=${data.testId}`;
             }
-
 
             displayQuestion();
         }

@@ -1,50 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>검사 결과</title>
-    <style>
-        .result-container {
-            margin: 50px auto;
-            width: 90%;
-            max-width: 900px;
-            padding: 20px;
-            background: #fff;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-        }
-
-        iframe {
-            width: 100%;
-            height: 80vh;
-            border: none;
-            border-radius: 8px;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-    </style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>결제</title>
+    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
 </head>
 <body>
-<div class="result-container">
-    <h2>나의 경력진단 결과</h2>
-    <iframe id="pdf-frame"></iframe>
-        <button id="payment-button" style="display:none;">결제하기</button>
-        <script>
-            const paymentButton = document.getElementById("payment-button");
-            paymentButton.style.display = "block";
-            paymentButton.addEventListener("click", function() {
-                window.location.href = "/career/result/payment";
-            });
-        </script>
-</div>
+<h1>결제 테스트</h1>
+<button id="payBtn">결제하기</button>
+
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const url = params.get("pdfUrl");
-    const pdfFrame = document.getElementById("pdf-frame");
-    pdfFrame.src = url;
+    document.getElementById("payBtn").addEventListener("click", requestPay);
+
+    async function requestPay() {
+        try {
+            const res = await fetch("/api/v1/payment/career", {
+                method: "GET",
+                credentials: "include" // JWT 쿠키 포함
+            });
+            const data = await res.json();
+            if (res.status !== 200) {
+                alert(data.message);
+                return;
+            }
+            const response = await PortOne.requestPayment({
+                storeId: data.storeId,
+                channelKey: data.channelKey,
+                paymentId: data.paymentId,
+                orderName: data.orderName,
+                totalAmount: data.totalAmount,
+                currency: data.currency,
+                payMethod: data.payMethod,
+            });
+            if (response.code !== undefined) {
+                // 오류 발생
+                return alert(response.message);
+            }
+            const notified = await fetch(`/api/v1/payment/career/complete`, {
+                method: "POST",
+                credentials: "include",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    paymentId: response.paymentId,
+                }),
+            });
+            const notifiedData = await notified.json();
+            if (notified.status !== 200) {
+                alert(notifiedData.message);
+                return;
+            }
+            alert("결제가 완료되었습니다.");
+            window.location.href = `/mypage?test=${data.testId}`;
+        } catch (e) {
+        }
+    }
 </script>
 </body>
 </html>

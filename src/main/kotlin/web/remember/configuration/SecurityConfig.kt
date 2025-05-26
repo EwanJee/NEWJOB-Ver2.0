@@ -39,7 +39,9 @@ class SecurityConfig(
                         "/image/**",
                         "/text/**",
                         "/public/**",
-                        "/error/**",
+                        "/error",
+                        "/error.html",
+                        "/.well-known/**",
                     ).permitAll()
                     .requestMatchers("/api/v1/**")
                     .authenticated()
@@ -49,7 +51,7 @@ class SecurityConfig(
                 it.successHandler(successHandler)
             }.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .sessionManagement {
-                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 비활성화
+                it.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 필요 시 세션 활용
             }
         return http.build()
     }

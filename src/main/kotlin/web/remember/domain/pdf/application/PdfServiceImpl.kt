@@ -1,4 +1,4 @@
-package web.remember.domain.test.application.pdf
+package web.remember.domain.pdf.application
 
 import com.itextpdf.forms.PdfAcroForm
 import com.itextpdf.io.font.PdfEncodings
